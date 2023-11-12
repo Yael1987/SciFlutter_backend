@@ -34,6 +34,7 @@ export default class BaseController {
       sendResponse: false,
       res: null,
       message: "Data fetched successfully",
+      justFirst: false
     }
   ) {
     const documents = await Model.find(options.filter);
@@ -45,6 +46,8 @@ export default class BaseController {
         data: documents,
       });
     }
+
+    if (options.justFirst) return documents[0];
 
     return documents;
   }
@@ -60,7 +63,7 @@ export default class BaseController {
   ) {
     const document = await Model.findById(id);
 
-    if (!document) return "No user found for this id";
+    if (!document) return "No document found for this id";
 
     if (options.sendResponse) {
       return this.sendResponse(options.res, 200, {

@@ -15,6 +15,7 @@
 
 import mongoose from "mongoose";
 import validator from "validator";
+import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -94,6 +95,23 @@ const userSchema = new mongoose.Schema({
     },
   ],
   discipline: String,
+});
+
+//Hash the password before the user has been created in the database
+userSchema.pre("save", async function (next) {
+  //If the password has not been modified just skip the middleware
+  if (!this.isModified("password")) return next();
+
+  this.password = await bcrypt.hash(this.password, 12);
+  this.passwordConfirm = undefined;
+  next();
+});
+
+//Look for all the queries that starts with "find" and checks that just users that are currently active are returned
+userSchema.pre(/^find/, function (next) {
+  //this points to the current query
+  this.find({status: {$eq: "active"}});
+  next();
 });
 
 const User = mongoose.model("User", userSchema);
