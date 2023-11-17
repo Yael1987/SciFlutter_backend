@@ -1,3 +1,5 @@
+import APIFeatures from "../utils/apiFeatures.js";
+
 export default class BaseController {
   async sendResponse(res, code, data) {
     res.status(code).json({
@@ -31,14 +33,21 @@ export default class BaseController {
     Model,
     options = {
       filter: {},
+      query: null,
       sendResponse: false,
       res: null,
       message: "Data fetched successfully",
       justFirst: false
     }
   ) {
-    const documents = await Model.find(options.filter);
+    const features = new APIFeatures(Model.find(options.filter), options.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
 
+    const documents = await features.query;
+    
     if (options.sendResponse) {
       return this.sendResponse(options.res, 200, {
         message: options.message,

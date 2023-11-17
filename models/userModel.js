@@ -1,21 +1,7 @@
-//Name
-//LastName
-//Email
-//Password
-//ConfirmPassword
-//Role
-//Status
-//Photos : [Profile, Cover]
-//TwoStepsAuthentication:
-//PhoneNumber
-//Settings
-//Description
-//SocialLinks
-//Discipline
-
 import mongoose from "mongoose";
 import validator from "validator";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -95,6 +81,7 @@ const userSchema = new mongoose.Schema({
     },
   ],
   discipline: String,
+  activationToken: String
 });
 
 //Hash the password before the user has been created in the database
@@ -110,9 +97,40 @@ userSchema.pre("save", async function (next) {
 //Look for all the queries that starts with "find" and checks that just users that are currently active are returned
 userSchema.pre(/^find/, function (next) {
   //this points to the current query
-  this.find({status: {$eq: "active"}});
+  this.find({status: {$neq: "desactivated"}});
   next();
 });
+
+userSchema.methods.correctPassword = async function (candidatePassword, password) {
+  return await bcrypt.compare(candidatePassword, password);
+};
+
+userSchema.methods.createActivationToken = function () {
+  const activationToken = crypto.randomBytes(32).toString("hex");
+
+  this.activationToken = crypto.createHash("sha256").update(activationToken).digest("hex");
+
+  return activationToken;
+}
+
+userSchema.methods.createResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  this.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
+}
+
+userSchema.methods.changedPasswordAfter = async function (JSTTimeStamp) {
+  if (this.passwordChangedAt) {
+    const chagedTimeStamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+     
+    return chagedTimeStamp > JSTTimeStamp;
+  }
+
+  return false;
+}
 
 const User = mongoose.model("User", userSchema);
 

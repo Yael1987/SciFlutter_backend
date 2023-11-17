@@ -21,7 +21,8 @@ const chatSchema = new mongoose.Schema({
   ],
   readAt: {
     type: Date,
-  }
+  },
+  lastMessage: String
 })
 
 chatSchema.index({ users: 1 });
@@ -36,9 +37,15 @@ chatSchema.pre("save", function (next) {
 })
 
 chatSchema.methods.addUserToReadBy = function (userId) {
-  if (!this.readBy.includes(userId)) {
+  if (this.readBy.length === this.users.length) return;
+
+  if (!this.readBy.includes(userId) && this.readBy.length !== this.users.length) {
     this.readBy.push(userId);
   }
+}
+
+chatSchema.methods.setLastMessage = function (lastMessage) {
+  this.lastMessage = lastMessage;
 }
 
 chatSchema.methods.removeUserFromReadBy = function (userId) {

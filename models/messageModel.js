@@ -31,10 +31,14 @@ const messageSchema = mongoose.Schema({
   readAt: Date,
 });
 
-messageSchema.pre(/^find/, async function (next) {
+messageSchema.pre("find", async function (next) {
   const chatId = this.getQuery().chatId;
   const chat = await mongoose.model("Chat").findById(chatId);
-  
+
+  //Elimina duplicados
+  chat.readBy = chat.readBy.filter((user, index) => chat.readBy.indexOf(user) === index);
+  await chat.save();
+
   const allUsersHaveRead = chat.users.length === chat.readBy.length;
 
   if (allUsersHaveRead){
