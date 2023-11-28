@@ -1,11 +1,11 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
 const chatSchema = new mongoose.Schema({
   users: [
     {
       type: mongoose.Schema.ObjectId,
-      ref: "User",
-      require: [true, "A chat must belong to a two users"]
+      ref: 'User',
+      require: [true, 'A chat must belong to a two users']
     }
   ],
   createdAt: {
@@ -15,49 +15,45 @@ const chatSchema = new mongoose.Schema({
   readBy: [
     {
       type: mongoose.Schema.ObjectId,
-      ref: "User",
+      ref: 'User',
       require: true
     }
   ],
   readAt: {
-    type: Date,
+    type: Date
   },
   lastMessage: String
 })
 
-chatSchema.index({ users: 1 });
-chatSchema.index({ readBy: 1 });
+chatSchema.index({ users: 1 })
+chatSchema.index({ readBy: 1 })
 
-chatSchema.pre("save", function (next) {
+chatSchema.pre('save', function (next) {
   if (this.readBy.length === this.users.length) {
-    this.readAt = Date.now();
+    this.readAt = Date.now()
   }
 
-  next();
+  next()
 })
 
 chatSchema.methods.addUserToReadBy = function (userId) {
-  if (this.readBy.length === this.users.length) return;
+  if (this.readBy.length === this.users.length) return
 
   if (!this.readBy.includes(userId) && this.readBy.length !== this.users.length) {
-    this.readBy.push(userId);
+    this.readBy.push(userId)
   }
-}
-
-chatSchema.methods.setLastMessage = function (lastMessage) {
-  this.lastMessage = lastMessage;
 }
 
 chatSchema.methods.removeUserFromReadBy = function (userId) {
-  this.readBy = this.readBy.filter(id => id.toString() !== userId.toString());
+  this.readBy = this.readBy.filter(id => id.toString() !== userId.toString())
 }
 
 chatSchema.methods.removeReceiverFromReadBy = function (userId) {
-  if (this.readBy.length > 1 && this.readBy.length) { 
-    this.readBy = this.readBy.filter(id => id.toString() === userId.toString());
+  if (this.readBy.length > 1 && this.readBy.length) {
+    this.readBy = this.readBy.filter(id => id.toString() === userId.toString())
   }
 }
 
-const Chat = mongoose.model("Chat", chatSchema);
+const Chat = mongoose.model('Chat', chatSchema)
 
-export default Chat;
+export default Chat

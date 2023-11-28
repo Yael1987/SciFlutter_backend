@@ -1,9 +1,9 @@
-export default class AppError extends Error{
-  constructor(message, statusCode) {
-    super(message);
+export default class AppError extends Error {
+  constructor (message, statusCode) {
+    super(message)
 
-    this.statusCode = statusCode;
-    this.status = `${statusCode}`.startsWith("4") ? "failed" : "error";
+    this.statusCode = statusCode
+    this.status = `${statusCode}`.startsWith('4') ? 'failed' : 'error'
 
     Error.captureStackTrace(this, this.constructor)
   }

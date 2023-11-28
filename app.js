@@ -1,62 +1,86 @@
-import express from "express"
-import cors from "cors";
-import http from "http";
-import { Server } from "socket.io";
+import express from 'express'
+import http from 'http'
+import { Server } from 'socket.io'
 
-//Routes
-import { router as usersRoutes } from "./routes/userRoutes.js";
-import { router as articlesRoutes } from "./routes/articleRoutes.js";
-import { router as featuresRoutes } from "./routes/featuresRoutes.js";
-import {router as messageRoutes} from "./routes/messageRoutes.js";
+import cors from 'cors'
+import helmet from 'helmet'
+import mongoSanitize from 'express-mongo-sanitize'
+import compression from 'compression'
 
-//Controllers
-import { globalErrorHandler } from "./controllers/ErrorController.js";
+// Middleware
+import sanitizeHtml from './utils/sanitizeHtml.js'
 
-const app = express();
-const server = http.createServer(app);
+//  Routes
+import { router as usersRoutes } from './routes/userRoutes.js'
+import { router as articlesRoutes } from './routes/articleRoutes.js'
+import { router as featuresRoutes } from './routes/featuresRoutes.js'
+import { router as messageRoutes } from './routes/messageRoutes.js'
+import { router as imagesRoutes } from './routes/imagesRoutes.js'
+
+//  Controllers
+import { globalErrorHandler } from './controllers/ErrorController.js'
+
+const app = express()
+const server = http.createServer(app)
+
 export const io = new Server(server, {
   connectionStateRecovery: {},
   cors: {
-    origin: "http://localhost:3000",
-  },
-});
+    origin: 'http://localhost:3000'
+  }
+})
 
-io.on("connection", socket => {
-  let timeout;
-  socket.on("join-chat", (chatId) => {
-    socket.join(chatId);
+io.on('connection', socket => {
+  let timeout
+  socket.on('join-chat', (chatId) => {
+    socket.join(chatId)
 
-    socket.to(chatId).emit("chat-open", "El otro usuario abrio el chat");
+    socket.to(chatId).emit('chat-open', 'El otro usuario abrio el chat')
   })
 
-  socket.on("new-message", chatId => {
-    socket.to(chatId).emit("new-message", "You received a new message")
+  socket.on('new-message', chatId => {
+    socket.to(chatId).emit('new-message', 'You received a new message')
   })
 
-  socket.on("chatReaded", data => {
-    clearTimeout(timeout);
+  socket.on('chatReaded', () => {
+    clearTimeout(timeout)
 
     timeout = setTimeout(
-      () => socket.broadcast.emit("chatReaded", "The other user has been readed your messages"),
+      () => socket.broadcast.emit('chatReaded', 'The other user has been readed your messages'),
       1000
-    );
-    
+    )
   })
 })
 
-app.use(cors());
-app.options("*", cors());
+app.enable('trust proxy')
+app.disable('x-powered-by')
 
-app.use(express.json({limit: "10kb"}));
+app.use(helmet())
 
-app.use("/api/v1/users", usersRoutes);
-app.use("/api/v1/articles", articlesRoutes);
-app.use("/api/v1/features", featuresRoutes);
-app.use("/api/v1/messages", messageRoutes);
-app.all("*", (req, res, next) => {
-  next(new Error("URL not found"))
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://localhost:*'],
+  credentials: true
+}))
+
+app.options('*', cors())
+
+app.use(express.json())
+
+// Sanitize request
+app.use(mongoSanitize())
+app.use(sanitizeHtml)
+
+app.use(compression())
+
+app.use('/api/v1/users', usersRoutes)
+app.use('/api/v1/articles', articlesRoutes)
+app.use('/api/v1/features', featuresRoutes)
+app.use('/api/v1/messages', messageRoutes)
+app.use('/api/v1/images', imagesRoutes)
+app.all('*', (req, res, next) => {
+  next(new Error('URL not found'))
 })
 
-app.use(globalErrorHandler);
+app.use(globalErrorHandler)
 
-export default server;
+export default server

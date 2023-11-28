@@ -1,21 +1,24 @@
-import express from "express";
-import { followAuthor, likeArticle, saveArticle, saveAsPdf, unfollowAuthor, unlikeArticle, unsaveArticle } from "../controllers/featuresController.js";
+import express from 'express'
+import featuresController, { saveAsPdf } from '../controllers/featuresController.js'
+import { authController } from '../controllers/authController.js'
 
-const router = express.Router();
+const router = express.Router()
 
-router.route("/saveArticle/:articleId")
-  .post(saveArticle)
-  .delete(unsaveArticle)
+router.use(authController.protectRoute)
 
-router.route("/likeArticle/:articleId")
-  .post(likeArticle)
-  .delete(unlikeArticle)
+router.route('/saveArticle/:id')
+  .post(featuresController.createFeatureDocument('Favorite'))
+  .delete(featuresController.deleteFeatureDocument('Favorite'))
 
-router.route("/followAuthor/:authorID")
-  .post(followAuthor)
-  .delete(unfollowAuthor)
+router.route('/likeArticle/:id')
+  .post(featuresController.createFeatureDocument('Like'))
+  .delete(featuresController.deleteFeatureDocument('Like'))
 
-router.get("/savePdf/:articleId", saveAsPdf)
+router.route('/followAuthor/:id')
+  .post(featuresController.createFeatureDocument('Follow'))
+  .delete(featuresController.deleteFeatureDocument('Follow'))
+
+router.get('/savePdf/:articleId', saveAsPdf)
 
 export {
   router

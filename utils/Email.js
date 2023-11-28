@@ -1,15 +1,15 @@
-import nodemailer from "nodemailer";
-import { htmlToText } from "html-to-text";
+import nodemailer from 'nodemailer'
+import { htmlToText } from 'html-to-text'
 
 export default class Email {
-  constructor(user, url) {
-    this.to = user.email;
-    this.firstName = user.name.split(" ")[0];
-    this.url = url;
-    this.from = "dejesusyael1987@gmail.com";
-  };
+  constructor (user, url) {
+    this.to = user.email
+    this.firstName = user.name.split(' ')[0]
+    this.url = url
+    this.from = 'dejesusyael1987@gmail.com'
+  }
 
-  newTransport() {
+  newTransport () {
     return nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
@@ -20,8 +20,8 @@ export default class Email {
     })
   }
 
-  //Sends the actual email
-  async send(subject, body) {
+  //  Sends the actual email
+  async send (subject, body) {
     const html = `
       <!DOCTYPE html>
       <html lang="en">
@@ -31,37 +31,37 @@ export default class Email {
           <title>${subject}</title>
           <style>
             body {
-              font-family: 'Arial', sans-serif;
-              margin: 0;
-              padding: 0;
-              background-color: #f4f4f4;
+              font-family: 'Arial', sans-serif
+              margin: 0
+              padding: 0
+              background-color: #f4f4f4
             }
 
             .container {
-              max-width: 600px;
-              margin: 0 auto;
-              padding: 20px;
-              background-color: #fff;
-              box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-              border-radius: 5px;
-              margin-top: 20px;
+              max-width: 600px
+              margin: 0 auto
+              padding: 20px
+              background-color: #fff
+              box-shadow: 0 0 10px rgba(0, 0, 0, 0.1)
+              border-radius: 5px
+              margin-top: 20px
             }
 
             h1 {
-              color: #333;
+              color: #333
             }
 
             p {
-              color: #555;
+              color: #555
             }
 
             .btn {
-              display: inline-block;
-              padding: 10px 20px;
-              background-color: #3498db;
-              color: #fff;
-              text-decoration: none;
-              border-radius: 5px;
+              display: inline-block
+              padding: 10px 20px
+              background-color: #3498db
+              color: #fff
+              text-decoration: none
+              border-radius: 5px
             }
           </style>
         </head>
@@ -69,7 +69,7 @@ export default class Email {
           ${body}
         </body>
       </html>
-    `;
+    `
 
     const mailOptions = {
       from: this.from,
@@ -79,10 +79,10 @@ export default class Email {
       html
     }
 
-    await this.newTransport().sendMail(mailOptions);
+    await this.newTransport().sendMail(mailOptions)
   }
 
-  async sendActivationToken() {
+  async sendActivationToken () {
     const body = `
       <div class="container">
         <h1>Confirmación de Cuenta</h1>
@@ -92,12 +92,12 @@ export default class Email {
         </p>
         <p>Si no te registraste en nuestro sitio, simplemente ignora este correo electrónico.</p>
       </div>
-    `;
+    `
 
-    await this.send("Activa tu cuenta de Sciflutter", body);
+    await this.send('Activa tu cuenta de Sciflutter', body)
   }
 
-  async sendActivationToken() {
+  async sendResetToken () {
     const body = `
       <div class="container">
         <h1>Recuperacion de Cuenta</h1>
@@ -107,8 +107,8 @@ export default class Email {
         </p>
         <p>Si no te fuiste tu quien solicito el cambio, simplemente ignora este correo electrónico.</p>
       </div>
-    `;
+    `
 
-    await this.send("Activa tu cuenta de Sciflutter", body);
+    await this.send('Recupera tu cuenta de Sciflutter', body)
   }
 }

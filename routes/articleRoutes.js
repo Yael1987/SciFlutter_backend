@@ -1,16 +1,28 @@
-import express from "express";
-import articleController from "../controllers/articleController.js";
+import express from 'express'
+import fileUpload from 'express-fileupload'
 
-const router = express.Router();
+import articleController from '../controllers/articleController.js'
 
-router.route("/")
-  .get(articleController.getArticles) //Obtener todos los articulos
-  .post(articleController.createArticle) //Publicar un articulo
+import { uploadArticleImgs, uploadArticleMainImg } from '../controllers/imagesController.js'
+import { authController } from '../controllers/authController.js'
 
-router.route("/:articleId")
-  .get(articleController.getOneArticle) //Obtener un articulo
-  .patch(articleController.updateArticle) //Editar un articulo
-  .delete(articleController.deleteArticle) //ELiminar un articulo
+const router = express.Router()
+
+router.use(fileUpload())
+
+router.get('/', articleController.getArticles) //  Obtener todos los articulos
+router.get('/:articleId', articleController.getOneArticle) //  Obtener un articulo
+
+router.use(authController.protectRoute)
+
+router.post('/upload-img/:articleId', uploadArticleImgs)
+router.post('/delete-img/:imgKey', uploadArticleImgs)
+
+router.post('/', authController.isVerified, uploadArticleMainImg, articleController.createArticle) // Publicar un articulo
+
+router.route('/:articleId')
+  .patch(articleController.verifyOwner, uploadArticleMainImg, articleController.updateArticle) //  Editar un articulo
+  .delete(articleController.verifyOwner, articleController.deleteArticle) // ELiminar un articulo
 
 export {
   router

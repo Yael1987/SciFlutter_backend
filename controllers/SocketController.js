@@ -1,9 +1,9 @@
-import { Server } from "socket.io";
+import { Server } from 'socket.io'
 
 export default class SocketController {
-  constructor(server) {
+  constructor (server) {
     this.io = new Server(server, {
       connectionStateRecovery: {}
-    });
+    })
   }
 }

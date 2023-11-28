@@ -1,36 +1,37 @@
-import jwt from "jsonwebtoken";
-import crypto from "crypto";
+import jwt from 'jsonwebtoken'
+import crypto from 'crypto'
 
-import { promisify } from "util";
+import { promisify } from 'util'
 
-import User from "../models/userModel.js";
-import catchAsync from "../utils/catchAsync.js";
-import BaseController from "./BaseController.js";
-import AppError from "../utils/appError.js";
-import Email from "../utils/Email.js";
+import User from '../models/userModel.js'
+import catchAsync from '../utils/catchAsync.js'
+import BaseController from './BaseController.js'
+import AppError from '../utils/AppError.js'
+import Email from '../utils/Email.js'
 
-function signToken(id) {
+function signToken (id) {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN
-  });
+  })
 }
 
-class AuthenticationController extends BaseController{
-  createToken(user, options = {
+class AuthenticationController extends BaseController {
+  createToken (user, options = {
     sendResponse: false,
-    res: null, 
+    res: null,
     code: 200,
     data: {}
   }) {
-    const token = signToken(user.id);
+    const token = signToken(user.id)
 
-    if (options.sendResponse) 
+    if (options.sendResponse) {
       this.sendResponse(options.res, options.code, {
         ...options.data,
         token
       })
+    }
 
-    return token;
+    return token
   }
 
   signup = catchAsync(async (req, res, next) => {
@@ -40,16 +41,16 @@ class AuthenticationController extends BaseController{
       email: req.body.email,
       password: req.body.password,
       passwordConfirm: req.body.passwordConfirm
-    }, User);
+    }, User)
 
-    const activationToken = newUser.createActivationToken();
+    const activationToken = newUser.createActivationToken()
 
-    await newUser.save({ validateBeforeSave: false });
+    await newUser.save({ validateBeforeSave: false })
 
-    const url = `${req.protocol}://${req.get("host")}/api/v1/users/confirm/${activationToken}`
+    const url = `${req.protocol}://${req.get('host')}/api/v1/users/confirm/${activationToken}`
 
     try {
-      await new Email(newUser, url).sendActivationToken();
+      await new Email(newUser, url).sendActivationToken()
 
       this.createToken(newUser, {
         sendResponse: true,
@@ -57,72 +58,71 @@ class AuthenticationController extends BaseController{
         code: 201,
         data: {
           success: true,
-          message: "User account created successfully",
-          data: {newUser},
+          message: 'User account created successfully',
+          data: { newUser }
         }
-      });
+      })
     } catch (error) {
-      await User.findByIdAndDelete(newUser.id);
+      await User.findByIdAndDelete(newUser.id)
 
       return next(
         new AppError(
-          "There was an error sending the email, Try again later",
+          'There was an error sending the email, Try again later',
           500
         )
-      );
+      )
     }
-  });
+  })
 
   protectRoute = catchAsync(async (req, res, next) => {
-    let token;
-    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
-      token = req.headers.authorization.split(" ")[1];
+    let token
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+      token = req.headers.authorization.split(' ')[1]
     }
 
     if (!token) {
-      next(new AppError("You are not logged in, please login and try again", 401));
+      next(new AppError('You are not logged in, please login and try again', 401))
     }
 
-    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET)
 
-    const freshUser = await this.getDocumentById(User, decoded.id);
+    const freshUser = await this.getDocumentById(User, decoded.id)
 
-    if (!freshUser) next(new AppError("The user belogin this token does not longer exist.", 401));
+    if (!freshUser) next(new AppError('The user belogin this token does not longer exist.', 401))
 
     if (await freshUser.changedPasswordAfter(decoded.iat)) {
       return next(
-        new AppError("Your password has been changed since you logged in.", 401)
-      );
+        new AppError('Your password has been changed since you logged in.', 401)
+      )
     }
 
-    req.user = freshUser;
+    req.user = freshUser
 
-    next();
+    next()
   })
 
   login = catchAsync(async (req, res, next) => {
-    const { email, password } = req.body;
+    const { email, password } = req.body
 
-    if (!email || !password) next(new AppError("All the fields are required, please provide a valid email and password.", 400));
-    
-    let user = await User.findOne({ email }).select("+password");
+    if (!email || !password) return next(new AppError('All the fields are required, please provide a valid email and password.', 400))
 
-    if (!user) next(new AppError("No user found for that email, please check the email of create an account", 400));
+    let user = await User.findOne({ email }).select('+password')
 
-    if (!(await user.correctPassword(password, user.password)))
-      next(new AppError("Incorrect password, please try it again", 400));
+    if (!user) return next(new AppError('No user found for that email, please check the email of create an account', 400))
 
-    if (user.status === "desactivated") {
-      user = await this.updateDocumentById(User, user.id, { status: "active" });
-    };
-    
+    if (!(await user.correctPassword(password, user.password))) return next(new AppError('Incorrect password, please try it again', 400))
+
+    if (user.status === 'desactivated') {
+      user = await this.updateDocumentById(User, user.id, { status: 'active' })
+    }
+
     this.createToken(user, {
       sendResponse: true,
       res,
       code: 200,
       data: {
         success: true,
-        message: "Login successfully, welcome back",
+        message: 'Login successfully, welcome back',
         data: {
           user
         }
@@ -130,46 +130,47 @@ class AuthenticationController extends BaseController{
     })
   })
 
-  restrictTo = catchAsync((...roles) => {
-    return(req, res, next) =>{
+  restrictTo = (...roles) => {
+    return (req, res, next) => {
       if (!roles.includes(req.user.role)) {
-        return next(new AppError("Your are not authorized to access this route", 403));
+        return next(new AppError('Your are not authorized to access this route', 403))
       }
 
-      next();
+      next()
     }
-  })
+  }
 
-  isVerified = catchAsync((req, res, next) => {
-    if (req.user.status !== "active") next(new AppError("Your account is not verified, please check your email where we send your instructions and try again", 403));
+  isVerified = catchAsync(async (req, res, next) => {
+    if (req.user.status !== 'active') return next(new AppError('Your account is not verified, please check your email where we send your instructions and try again', 403))
 
-    next();
+    next()
   })
 
   activateAccount = catchAsync(async (req, res, next) => {
-    //get user based on the token
-    const hashedToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
+    //  get user based on the token
+    const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex')
 
     const user = await this.getDocuments(User, {
       filter: {
         activationToken: hashedToken
       },
-      justFirst: true,
+      query: req.query,
+      justFirst: true
     })
 
-    //Checks if the user exists
-    if (!user) return next(new AppError("The user belonging to this token does not exist", 404));
+    //  Checks if the user exists
+    if (!user) return next(new AppError('The user belonging to this token does not exist', 404))
 
-    //Update the user status and clear the activation token
-    user.activationToken = undefined;
-    user.status = "active";
+    //  Update the user status and clear the activation token
+    user.activationToken = undefined
+    user.status = 'active'
 
-    await user.save({ validateBeforeSave: false });
+    await user.save({ validateBeforeSave: false })
 
-    //Send the response to the client
+    //  Send the response to the client
     this.sendResponse(res, 200, {
       success: true,
-      message: "Your account has been activated successfully",
+      message: 'Your account has been activated successfully',
       data: {
         user
       }
@@ -182,54 +183,55 @@ class AuthenticationController extends BaseController{
       justFirst: true
     })
 
-    if (!user) return next(new AppError("No such user found for that email address", 404));
+    if (!user) return next(new AppError('No such user found for that email address', 404))
 
-    const resetToken = user.createResetToken();
-    await user.save({ validateBeforeSave: false });
+    const resetToken = user.createResetToken()
+    await user.save({ validateBeforeSave: false })
 
-    const url = `${req.protocol}://${req.get("host")}/api/v1/users/resetPassword/${resetToken}`;
+    const url = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`
 
     try {
-      await new Email(user, url).sendActivationToken();
+      await new Email(user, url).sendResetToken()
 
       this.sendResponse(res, 200, {
         success: true,
-        message: "We sent a email with instructions for recovering your account"
+        message: 'We sent a email with instructions for recovering your account'
       })
     } catch (error) {
-      user.passwordResetToken = undefined;
-      user.passwordResetExpires = undefined;
-      await user.save({validateBeforeSave: false});
+      user.passwordResetToken = undefined
+      user.passwordResetExpires = undefined
+      await user.save({ validateBeforeSave: false })
 
       return next(
         new AppError(
-          "There was an error sending the email, Try again later",
+          'There was an error sending the email, Try again later',
           500
         )
-      );
+      )
     }
   })
 
   resetPassword = catchAsync(async (req, res, next) => {
-    //Get user based on token 
-    const hashedToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
+    //  Get user based on token
+    const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex')
 
     const user = await this.getDocuments(User, {
       filter: {
         passwordResetToken: hashedToken,
         passwordResetExpires: { $gt: Date.now() }
       },
+      query: req.query,
       justFirst: true
     })
 
-    if(!user) return next(new AppError("Password reset token is invalid or has been expired", 400));
+    if (!user) return next(new AppError('Password reset token is invalid or has been expired', 400))
 
-    user.password = req.body.password;
-    user.passwordConfirm = req.body.passwordConfirm;
-    user.passwordResetToken = undefined;
-    user.passwordResetExpires = undefined;
+    user.password = req.body.password
+    user.passwordConfirm = req.body.passwordConfirm
+    user.passwordResetToken = undefined
+    user.passwordResetExpires = undefined
 
-    await user.save();
+    await user.save()
 
     this.createToken(user, {
       sendResponse: true,
@@ -237,7 +239,7 @@ class AuthenticationController extends BaseController{
       code: 200,
       data: {
         success: true,
-        message: "Password reset has been successfully",
+        message: 'Password reset has been successfully',
         data: {
           user
         }
@@ -246,17 +248,16 @@ class AuthenticationController extends BaseController{
   })
 
   updatePassword = catchAsync(async (req, res, next) => {
-    const user = await User.findById(req.user.id).select("+password");
+    const user = await User.findById(req.user.id).select('+password')
 
-    if(!user) return next(new AppError("User not found", 404));
+    if (!user) return next(new AppError('User not found', 404))
 
-    if (!(user.correctPassword(req.body.passwordCurrent, user.password)))
-      return next(new AppError("Current password is incorrect", 400));
+    if (!(user.correctPassword(req.body.passwordCurrent, user.password))) return next(new AppError('Current password is incorrect', 400))
 
-    user.password = req.body.password;
-    user.passwordConfirm = req.body.passwordConfirm;
+    user.password = req.body.password
+    user.passwordConfirm = req.body.passwordConfirm
 
-    await user.save();
+    await user.save()
 
     this.createToken(user, {
       sendResponse: true,
@@ -264,13 +265,13 @@ class AuthenticationController extends BaseController{
       code: 200,
       data: {
         success: true,
-        message: "Login successfully, welcome back",
+        message: 'Login successfully, welcome back',
         data: {
-          user,
-        },
-      },
-    });
+          user
+        }
+      }
+    })
   })
-};
+}
 
-export const authController = new AuthenticationController();
+export const authController = new AuthenticationController()
