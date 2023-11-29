@@ -2,6 +2,7 @@ import sharp from 'sharp'
 import catchAsync from '../utils/catchAsync.js'
 import { uploadFile } from '../utils/minio.js'
 import AppError from '../utils/AppError.js'
+import Draft from '../models/draftModel.js'
 
 export const saveUserPics = catchAsync(async (req, res, next) => {
   if (!req.files) return next()
@@ -33,7 +34,6 @@ export const saveUserPics = catchAsync(async (req, res, next) => {
 })
 
 export const uploadArticleMainImg = catchAsync(async (req, res, next) => {
-  console.log(req.files)
   if (!req.files) return next()
 
   if (req.files.image) {
@@ -58,8 +58,12 @@ export const uploadArticleMainImg = catchAsync(async (req, res, next) => {
 })
 
 export const uploadArticleImgs = catchAsync(async (req, res) => {
+  const draft = await Draft.findById(req.params.draftId)
+
+  if (!draft) return res.json({ error: { message: 'Draft not found' } })
+
   const file = req.files.upload
-  const fileName = `article-${Date.now()}.jpeg`
+  const fileName = `articles-images/${draft.name.replace(' ', '_')}-${Date.now()}.jpeg`
 
   const compressFile = await sharp(file.data)
     .toFormat('jpeg')
@@ -79,6 +83,9 @@ export const uploadArticleImgs = catchAsync(async (req, res) => {
       error: { message: 'Failed to upload the image' }
     })
   } else {
+    draft.images.push(`http://localhost:9000/sciflutter/${fileName}`)
+    await draft.save()
+
     return res.json({
       url: `http://localhost:9000/sciflutter/${fileName}`
       // url: `http://localhost:9000/sciflutter/article-1700676352289.jpeg`,
