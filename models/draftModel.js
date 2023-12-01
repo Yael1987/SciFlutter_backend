@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-const draftSchema = mongoose.Schema({
+const draftSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, 'An article must have a name'],

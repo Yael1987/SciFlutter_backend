@@ -51,16 +51,6 @@ class ArticleController extends BaseController {
     })
   })
 
-  getUserArticles = catchAsync(async (req, res, next) => {
-    await this.getDocuments(Article, {
-      filter: { author: req.user.id },
-      query: req.query,
-      sendResponse: true,
-      res,
-      message: 'Articles received from the database'
-    })
-  })
-
   getDrafts = catchAsync(async (req, res, next) => {
     await this.getDocuments(Draft, {
       filter: { author: req.user.id },
@@ -101,7 +91,7 @@ class ArticleController extends BaseController {
 
     if (!draft) return next(new AppError('Draft not found with that id', 404))
 
-    if (req.user.id !== draft.author.id) return next(new AppError('You are not allowed to update this draft', 403))
+    if (req.user.id !== draft.author.toString()) return next(new AppError('You are not allowed to update this draft', 403))
 
     Object.keys(req.body).forEach(field => {
       if (allowedFields.includes(field)) {
@@ -150,17 +140,17 @@ class ArticleController extends BaseController {
     })
   })
 
-  publishDraft = catchAsync(async (req, res, next) => {
+  clearDraft = catchAsync(async (req, res, next) => {
     // Get the draft from database
     const draft = await this.getDocumentById(Draft, req.params.draftId)
 
     // Check if the draft exists and if belongs to the current user
     if (!draft) return next(new AppError('Draft not found with that id', 404))
 
-    if (req.user.id !== draft.author) return next(new AppError('You are not allowed to update this draft', 403))
+    if (req.user.id !== draft.author.toString()) return next(new AppError('You are not allowed to update this draft', 403))
 
     // Gets all the imgURl from the content HTML using a regex /http:\/\/localhost[^"']*/g
-    const contentUrls = draft.content.match(process.env.FILTER_URL_REGEX)
+    const contentUrls = draft.content.match(/http:\/\/(?:localhost|127\.0\.0\.1)[^"']*/g)
 
     if (draft.images.length > 0) {
       // filter the temp images array in order to verify if all the images submitted while drafting are being used
@@ -170,35 +160,23 @@ class ArticleController extends BaseController {
       if (imgsDontUsed?.length > 0) await Promise.all(imgsDontUsed.map(async imageUrl => await deleteFile(imageUrl)))
     }
 
-    // Build the article using the draft data
-    const articleObj = {
-      name: draft.name,
-      image: req.body.image,
-      author: draft.author,
-      resume: draft.resume,
-      introduction: draft.introduction,
-      discipline: draft.discipline || req.user.discipline,
-      content: draft.content,
-      bibliography: draft.bibliography
-    }
+    req.body.name = draft.name
+    req.body.author = draft.author
+    req.body.resume = draft.resume
+    req.body.introduction = draft.introduction
+    req.body.discipline = draft.discipline || req.user.discipline
+    req.body.content = draft.content
+    req.body.bibliography = draft.bibliography
 
-    // Save the article
-    await this.createDocument(articleObj, Article)
-
-    // Delete the draft once the article has been created
-    await this.deleteDocumentById(Draft, draft.id, {
-      sendResponse: true,
-      res,
-      message: 'Draft published successfully'
-    })
+    next()
   })
 
   verifyOwner = catchAsync(async (req, res, next) => {
-    const article = this.getDocumentById(Article, req.params.article)
+    const article = await this.getDocumentById(Article, req.params.articleId)
 
     if (!article) return next(new AppError('Article not found', 404))
 
-    if (req.user.id !== article.author.id) return next(new AppError('You cannot update an article that you do not own', 403))
+    if (req.user.id !== article.author.toString()) return next(new AppError('You cannot update an article that you do not own', 403))
 
     req.article = article
 

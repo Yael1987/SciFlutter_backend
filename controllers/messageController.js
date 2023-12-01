@@ -96,8 +96,27 @@ class MessageController extends BaseController {
         }
       },
       {
+        $lookup: {
+          from: 'users',
+          localField: 'users',
+          foreignField: '_id',
+          as: 'usersData'
+        }
+      },
+      {
         $project: {
-          users: 1,
+          users: {
+            $map: {
+              input: '$usersData',
+              as: 'usersData',
+              in: {
+                _id: '$$usersData._id',
+                name: '$$usersData.name',
+                lastName: '$$usersData.lastName',
+                status: '$$usersData.status'
+              }
+            }
+          },
           readBy: 1,
           readAt: 1,
           lastMessage: {

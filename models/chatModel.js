@@ -36,6 +36,15 @@ chatSchema.pre('save', function (next) {
   next()
 })
 
+chatSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'users',
+    select: 'name lastName photos.profile status'
+  })
+
+  next()
+})
+
 chatSchema.methods.addUserToReadBy = function (userId) {
   if (this.readBy.length === this.users.length) return
 

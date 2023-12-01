@@ -1,5 +1,6 @@
 import Article from '../models/articleModel.js'
 import Chat from '../models/chatModel.js'
+import Draft from '../models/draftModel.js'
 import Favorite from '../models/favoriteModel.js'
 import Follow from '../models/followModel.js'
 import Like from '../models/likeModel.js'
@@ -108,7 +109,38 @@ class UserController extends BaseController {
       }
     }
 
-    await this.deleteDocuments(Article, { author: req.user._id })
+    const articles = await this.getDocuments(Article, {
+      filter: { author: req.user._id },
+      query: req.query
+    })
+
+    await Promise.all(articles.map(async article => {
+      const contentUrls = article.content.match(/http:\/\/(?:localhost|127\.0\.0\.1)[^"']*/g)
+
+      if (contentUrls) {
+        await Promise.all(contentUrls.map(async url => deleteFile(url)))
+      }
+
+      await deleteFile(article.image)
+
+      await this.deleteDocumentById(Article, article.id)
+    }))
+
+    const drafts = await this.getDocuments(Draft, {
+      filter: { author: req.user._id },
+      query: req.query
+    })
+
+    await Promise.all(
+      drafts.map(async draft => {
+        if (draft.images) {
+          await Promise.all(draft.images.map(async (url) => deleteFile(url)))
+        }
+
+        await this.deleteDocumentById(Draft, draft.id)
+      })
+    )
+
     await this.deleteDocuments(Like, { userId: req.user._id })
     await this.deleteDocuments(Follow, { $or: [{ userId: req.user._id }, { authorId: req.user._id }] })
     await this.deleteDocuments(Favorite, { userId: req.user._id })
