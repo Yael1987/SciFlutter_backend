@@ -19,6 +19,7 @@ import { router as imagesRoutes } from './routes/imagesRoutes.js'
 
 //  Controllers
 import { globalErrorHandler } from './controllers/ErrorController.js'
+import cookieParser from 'cookie-parser'
 
 const app = express()
 const server = http.createServer(app)
@@ -55,6 +56,8 @@ io.on('connection', socket => {
 app.enable('trust proxy')
 app.disable('x-powered-by')
 
+app.set('view engine', 'pug')
+
 app.use(helmet())
 
 app.use(cors({
@@ -65,10 +68,26 @@ app.use(cors({
 app.options('*', cors())
 
 app.use(express.json())
+app.use(express.urlencoded({ extended: true, limit: '10kb' }))
+app.use(cookieParser())
 
 // Sanitize request
 app.use(mongoSanitize())
 app.use(sanitizeHtml)
+
+// Prevent params pollution filtering the request query using a white list
+app.use((req, res, next) => {
+  const whiteList = ['author', 'createdAt', 'discipline', 'userId', 'role', 'status', 'name', 'authorId', 'article', 'user', 'id']
+
+  req.query = Object.keys(req.query)
+    .filter(key => whiteList.includes(key))
+    .reduce((obj, key) => {
+      obj[key] = req.query[key]
+      return obj
+    }, {})
+
+  next()
+})
 
 app.use(compression())
 

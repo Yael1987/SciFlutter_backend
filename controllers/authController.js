@@ -16,22 +16,15 @@ function signToken (id) {
 }
 
 class AuthenticationController extends BaseController {
-  createToken (user, options = {
-    sendResponse: false,
-    res: null,
-    code: 200,
-    data: {}
-  }) {
+  createToken (user, res, req, code, data) {
     const token = signToken(user.id)
 
-    if (options.sendResponse) {
-      this.sendResponse(options.res, options.code, {
-        ...options.data,
-        token
-      })
-    }
+    user.password = undefined
 
-    return token
+    return this.sendResponse(res, code, {
+      token,
+      ...data
+    })
   }
 
   signup = catchAsync(async (req, res, next) => {
@@ -47,19 +40,15 @@ class AuthenticationController extends BaseController {
 
     await newUser.save({ validateBeforeSave: false })
 
-    const url = `${req.protocol}://${req.get('host')}/api/v1/users/confirm/${activationToken}`
+    const url = `${process.env.FRONTEND_URL}/confirm/${activationToken}`
 
     try {
       await new Email(newUser, url).sendActivationToken()
 
-      this.createToken(newUser, {
-        sendResponse: true,
-        res,
-        code: 201,
+      await this.createToken(newUser, res, req, 201, {
+        message: 'User created succesfully',
         data: {
-          success: true,
-          message: 'User account created successfully',
-          data: { newUser }
+          user: newUser
         }
       })
     } catch (error) {
@@ -76,7 +65,7 @@ class AuthenticationController extends BaseController {
 
   protectRoute = catchAsync(async (req, res, next) => {
     let token
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    if (req.headers.authorization?.startsWith('Bearer ')) {
       token = req.headers.authorization.split(' ')[1]
     }
 
@@ -116,16 +105,10 @@ class AuthenticationController extends BaseController {
       user = await this.updateDocumentById(User, user.id, { status: 'active' })
     }
 
-    this.createToken(user, {
-      sendResponse: true,
-      res,
-      code: 200,
+    this.createToken(user, res, req, 200, {
+      message: 'Logged in successfully',
       data: {
-        success: true,
-        message: 'Login successfully, welcome back',
-        data: {
-          user
-        }
+        user
       }
     })
   })
@@ -233,19 +216,21 @@ class AuthenticationController extends BaseController {
 
     await user.save()
 
-    this.createToken(user, {
-      sendResponse: true,
-      res,
-      code: 200,
+    this.createToken(user, res, req, 200, {
+      message: 'Password reset has been successfully',
       data: {
-        success: true,
-        message: 'Password reset has been successfully',
-        data: {
-          user
-        }
+        user
       }
     })
   })
+
+  logout = (req, res) => {
+    res.clearCookie('token')
+
+    res.status(200).json({
+      status: 'success'
+    })
+  }
 
   updatePassword = catchAsync(async (req, res, next) => {
     const user = await User.findById(req.user.id).select('+password')
@@ -259,16 +244,10 @@ class AuthenticationController extends BaseController {
 
     await user.save()
 
-    this.createToken(user, {
-      sendResponse: true,
-      res,
-      code: 200,
+    this.createToken(user, res, res, 200, {
+      message: 'Login successfully, welcome back',
       data: {
-        success: true,
-        message: 'Login successfully, welcome back',
-        data: {
-          user
-        }
+        user
       }
     })
   })

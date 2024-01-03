@@ -46,11 +46,11 @@ const userSchema = new mongoose.Schema({
   photos: {
     profile: {
       type: String,
-      default: 'defaultProfilePic.jpg'
+      default: '/img/default.jpg'
     },
     cover: {
       type: String,
-      default: 'defaultCoverPic.jpg'
+      default: '/img/covers/12.png'
     }
   },
   twoStepsAuthentication: {

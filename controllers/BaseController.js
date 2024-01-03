@@ -1,3 +1,4 @@
+import AppError from '../utils/AppError.js'
 import APIFeatures from '../utils/apiFeatures.js'
 
 export default class BaseController {
@@ -71,6 +72,8 @@ export default class BaseController {
     }
   ) {
     const document = await Model.findById(id)
+
+    if (!document) throw new AppError(`${Model.modelName} not found`, 404)
 
     if (options.sendResponse) {
       return this.sendResponse(options.res, 200, {

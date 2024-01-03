@@ -1,0 +1,29 @@
+extends baseEmail
+
+block content
+  table(cellpadding="0", cellspacing="0", width="100%", style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px")
+    tr
+      td.es-m-txt-c(align="center", style="padding:0;Margin:0;padding-bottom:10px")
+        h1(style="Margin:0;line-height:46px;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:46px;font-style:normal;font-weight:bold;color:#333333")
+          | Confirma tu cuenta
+    tr
+      td.es-m-p0r.es-m-p0l(align="center", style="Margin:0;padding-top:5px;padding-bottom:5px;padding-left:40px;padding-right:40px")
+        p(style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px")
+          | Hola, #{firstName}! Bienvenido a Sciflutter, agradecemos que seas parte de nuestra comunidad y
+          | esperamos tengas una grata experiencia. Para completar la creacion de tu cuenta por
+          | favor confirma tu correo electronico haciendo click en el botón.
+    tr
+      td(align="center", style="padding:0;Margin:0;padding-bottom:5px;padding-top:10px")
+        p(style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px")
+          | Si no has hecho un registro en nuestro sitio, por favor ignora este correo.
+    tr
+      td(align="center", style="padding:0;Margin:0;padding-top:10px;padding-bottom:10px")
+        span.es-button-border(style="border-style:solid;border-color:#2CB543;background:#e67700;border-width:0px;display:inline-block;border-radius:6px;width:auto")
+          a.es-button(href=`${url}`, target="_blank", style="mso-style-priority:100 !important;text-decoration:none;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;color:#FFFFFF;font-size:20px;padding:10px 30px 10px 30px;display:inline-block;background:#e67700;border-radius:6px;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-weight:normal;font-style:normal;line-height:24px;width:auto;text-align:center;mso-padding-alt:0;mso-border-alt:10px solid #e67700;padding-left:30px;padding-right:30px")
+            | CONFIRMAR
+            | CUENTA
+    tr
+      td.es-m-p0r.es-m-p0l(align="center", style="Margin:0;padding-top:5px;padding-bottom:5px;padding-left:40px;padding-right:40px")
+        p(style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px")
+          | En caso de algun error, intenta crear nuevamente la cuenta
+          br
