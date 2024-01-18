@@ -1,6 +1,6 @@
 import sharp from 'sharp'
 import catchAsync from '../utils/catchAsync.js'
-import { uploadFile } from '../utils/minio.js'
+import { deleteFile, uploadFile } from '../utils/minio.js'
 import AppError from '../utils/AppError.js'
 import Draft from '../models/draftModel.js'
 
@@ -13,7 +13,7 @@ export const saveUserPics = catchAsync(async (req, res, next) => {
   for (const key of Object.keys(req.files)) {
     if (allowedPics.includes(key)) {
       const file = req.files[key]
-      const fileName = `user-avatars/pic-${key}-${req.user.id}.jpeg`
+      const fileName = `user-avatars/pic-${key}-${req.user.id}-${Date.now()}.jpeg`
 
       const compressFile = await sharp(file.data)
         .toFormat('jpeg')
@@ -25,6 +25,8 @@ export const saveUserPics = catchAsync(async (req, res, next) => {
       if (minioResponse.err) {
         return next(new AppError('Error uploading image', 500))
       } else {
+        await deleteFile(req.user.photos[key])
+
         req.body.photos[key] = `http://localhost:9000/sciflutter/${fileName}`
       }
     }

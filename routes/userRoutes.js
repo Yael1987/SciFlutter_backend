@@ -17,6 +17,7 @@ router.patch('/resetPassword/:token', authController.resetPassword) //  Reset my
 router.patch('/confirm/:token', authController.activateAccount) //  This change the account state to active, the token is sent on email
 
 router.get('/', authController.restrictTo('admin'), userController.getAllUsers) //  We retreive the users, you can filter the results using the filter params
+router.get('/me', authController.protectRoute, userController.getMe)
 router.get('/authors', userController.getAuthors) //  We retreive just the users that are authors
 router.get('/:id', userController.getOneUser) //  We retreive a user based on the userId, the id parameter is the id of the user
 

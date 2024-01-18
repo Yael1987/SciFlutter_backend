@@ -50,17 +50,6 @@ export default class Email {
   }
 
   async sendResetToken () {
-    const body = `
-      <div class="container">
-        <h1>Recuperacion de Cuenta</h1>
-        <p>Hola ${this.firstName}, Para poder recuperar tu cuenta y cambiar tu contraseña en Sciflutter, por favor haz clic en el siguiente enlace:</p>
-        <p>
-          <a class="btn" href="${this.url}" target="_blank">Recuperar cuenta</a>
-        </p>
-        <p>Si no te fuiste tu quien solicito el cambio, simplemente ignora este correo electrónico.</p>
-      </div>
-    `
-
-    await this.send('Recupera tu cuenta de Sciflutter', body)
+    await this.send('Recupera tu cuenta de Sciflutter', 'resetPassword')
   }
 }

@@ -13,6 +13,10 @@ export {
 }
 
 class FeaturesController extends BaseController {
+  // getFollowedAuthor = catchAsync(async (req, res, next) => {
+
+  // })
+
   createFeatureDocument = (modelName) => catchAsync(async (req, res, next) => {
     if (req.user.id === req.params.id) return next(new AppError('Cannot follow yourself', 403))
     if (modelName === 'Follow') {

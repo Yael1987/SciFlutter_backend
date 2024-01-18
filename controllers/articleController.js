@@ -85,6 +85,59 @@ class ArticleController extends BaseController {
     })
   })
 
+  getSavedArticles = catchAsync(async (req, res, next) => {
+    const favoriteArticles = await Favorite.aggregate([
+      {
+        $match: { userId: req.user.id }
+      },
+      {
+        $lookup: {
+          from: 'articles',
+          localField: 'articleId',
+          foreignField: '_id',
+          as: 'article'
+        }
+      },
+      {
+        $unwind: '$article'
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'article.author',
+          foreignField: '_id',
+          as: 'article.author'
+        }
+      },
+      {
+        $unwind: '$article.author'
+      },
+      {
+        $project: {
+          _id: '$article._id',
+          name: '$article.name',
+          image: '$article.image',
+          author: '$article.author',
+          resume: '$article.resume',
+          introduction: '$article.introduction',
+          discipline: '$article.discipline',
+          content: '$article.content',
+          bibliography: '$article.bibliography',
+          createdAt: '$article.createdAt',
+          status: '$article.status',
+          favoriteId: '$_id'
+        }
+      }
+    ])
+
+    this.sendResponse(res, 200, {
+      message: 'Saved articles retrived from database',
+      data: {
+        saves: favoriteArticles
+      }
+    })
+  })
+
   saveDraftChanges = catchAsync(async (req, res, next) => {
     const draft = await this.getDocumentById(Draft, req.params.articleId)
     const allowedFields = ['resume', 'content', 'introduction', 'bibliography']

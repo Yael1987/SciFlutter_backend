@@ -97,7 +97,7 @@ class AuthenticationController extends BaseController {
 
     let user = await User.findOne({ email }).select('+password')
 
-    if (!user) return next(new AppError('No user found for that email, please check the email of create an account', 400))
+    if (!user) return next(new AppError('No user found for that email, please check the email or create an account', 400))
 
     if (!(await user.correctPassword(password, user.password))) return next(new AppError('Incorrect password, please try it again', 400))
 
@@ -130,6 +130,8 @@ class AuthenticationController extends BaseController {
   })
 
   activateAccount = catchAsync(async (req, res, next) => {
+    if (!req.params.token) return next(new AppError('Por favor ingresa un token valido', 400))
+
     //  get user based on the token
     const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex')
 
@@ -153,10 +155,7 @@ class AuthenticationController extends BaseController {
     //  Send the response to the client
     this.sendResponse(res, 200, {
       success: true,
-      message: 'Your account has been activated successfully',
-      data: {
-        user
-      }
+      message: 'Your account has been activated successfully'
     })
   })
 
@@ -171,7 +170,7 @@ class AuthenticationController extends BaseController {
     const resetToken = user.createResetToken()
     await user.save({ validateBeforeSave: false })
 
-    const url = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`
+    const url = `${process.env.FRONTEND_URL}/restablecer/${resetToken}`
 
     try {
       await new Email(user, url).sendResetToken()
@@ -183,6 +182,7 @@ class AuthenticationController extends BaseController {
     } catch (error) {
       user.passwordResetToken = undefined
       user.passwordResetExpires = undefined
+
       await user.save({ validateBeforeSave: false })
 
       return next(
@@ -201,7 +201,9 @@ class AuthenticationController extends BaseController {
     const user = await this.getDocuments(User, {
       filter: {
         passwordResetToken: hashedToken,
-        passwordResetExpires: { $gt: Date.now() }
+        passwordResetExpires: {
+          $gt: Date.now()
+        }
       },
       query: req.query,
       justFirst: true
@@ -217,7 +219,7 @@ class AuthenticationController extends BaseController {
     await user.save()
 
     this.createToken(user, res, req, 200, {
-      message: 'Password reset has been successfully',
+      message: 'Password has been reseted successfully',
       data: {
         user
       }
@@ -233,19 +235,21 @@ class AuthenticationController extends BaseController {
   }
 
   updatePassword = catchAsync(async (req, res, next) => {
+    console.log(req.user)
+
     const user = await User.findById(req.user.id).select('+password')
 
     if (!user) return next(new AppError('User not found', 404))
 
-    if (!(user.correctPassword(req.body.passwordCurrent, user.password))) return next(new AppError('Current password is incorrect', 400))
+    if (!(await user.correctPassword(req.body.password, user.password))) return next(new AppError('Current password is incorrect', 400))
 
-    user.password = req.body.password
-    user.passwordConfirm = req.body.passwordConfirm
+    user.password = req.body.newPassword
+    user.passwordConfirm = req.body.newPasswordConfirm
 
     await user.save()
 
     this.createToken(user, res, res, 200, {
-      message: 'Login successfully, welcome back',
+      message: 'Password updated successfully',
       data: {
         user
       }

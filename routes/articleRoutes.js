@@ -10,6 +10,8 @@ const router = express.Router()
 
 router.use(fileUpload())
 
+router.get('/saves', authController.protectRoute, articleController.getSavedArticles)
+
 router.get('/', articleController.getArticles) //  Obtener todos los articulos
 router.get('/drafts', authController.protectRoute, articleController.getDrafts) //  Obtener todos los articulos
 router.get('/:articleId', articleController.getOneArticle) //  Obtener un articulo

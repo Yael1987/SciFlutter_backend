@@ -32,6 +32,8 @@ class UserController extends BaseController {
   })
 
   getOneUser = catchAsync(async (req, res, next) => {
+    // const user = User.findById(req.params.id).populate('articles followers')
+
     await this.getDocumentById(User, req.params.id, {
       sendResponse: true,
       res,
@@ -72,6 +74,18 @@ class UserController extends BaseController {
       sendResponse: true,
       res,
       message: 'User data has been updated successfully'
+    })
+  })
+
+  getMe = catchAsync(async (req, res, next) => {
+    const user = await User.findById(req.user.id)
+    if (!user) return next(new AppError('User not found', 404))
+
+    this.sendResponse(res, 200, {
+      data: {
+        user
+      },
+      message: 'Logged user retreived from database'
     })
   })
 

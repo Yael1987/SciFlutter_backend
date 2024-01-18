@@ -50,7 +50,7 @@ const userSchema = new mongoose.Schema({
     },
     cover: {
       type: String,
-      default: '/img/covers/12.png'
+      default: '/img/default-cover.png'
     }
   },
   twoStepsAuthentication: {
@@ -82,6 +82,24 @@ const userSchema = new mongoose.Schema({
   ],
   discipline: String,
   activationToken: String
+}, {
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+})
+
+// virtual populate
+userSchema.virtual('articles', {
+  ref: 'Article',
+  foreignField: 'author',
+  localField: '_id',
+  match: { status: 'published' }
+})
+
+userSchema.virtual('followers', {
+  ref: 'Follow',
+  foreignField: 'authorId',
+  localField: '_id',
+  count: true
 })
 
 //  Hash the password before the user has been created in the database
@@ -96,8 +114,27 @@ userSchema.pre('save', async function (next) {
 
 //  Look for all the queries that starts with 'find' and checks that just users that are currently active are returned
 userSchema.pre(/^find/, function (next) {
+  console.log(this.options.skip)
+
+  if (this.options._recursed) {
+    return next()
+  }
+
   //  this points to the current query
   this.find({ status: { $ne: 'desactivated' } })
+  console.log('Find')
+
+  next()
+})
+
+userSchema.pre(/^find/, function (next) {
+  if (this.options._recursed) {
+    return next()
+  }
+
+  console.log('Populate')
+
+  this.populate({ path: 'articles followers', retainNullValues: true, options: { skip: true } })
   next()
 })
 
