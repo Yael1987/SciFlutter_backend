@@ -16,6 +16,7 @@ import { router as articlesRoutes } from './routes/articleRoutes.js'
 import { router as featuresRoutes } from './routes/featuresRoutes.js'
 import { router as messageRoutes } from './routes/messageRoutes.js'
 import { router as imagesRoutes } from './routes/imagesRoutes.js'
+import { router as requestsRoutes } from './routes/requestsRoutes.js'
 
 //  Controllers
 import { globalErrorHandler } from './controllers/ErrorController.js'
@@ -77,7 +78,7 @@ app.use(sanitizeHtml)
 
 // Prevent params pollution filtering the request query using a white list
 app.use((req, res, next) => {
-  const whiteList = ['author', 'createdAt', 'discipline', 'userId', 'role', 'status', 'name', 'authorId', 'article', 'user', 'id']
+  const whiteList = ['author', 'createdAt', 'discipline', 'userId', 'role', 'status', 'name', 'authorId', 'article', 'user', 'id', 'type', 'limit', 'page']
 
   req.query = Object.keys(req.query)
     .filter(key => whiteList.includes(key))
@@ -96,6 +97,7 @@ app.use('/api/v1/articles', articlesRoutes)
 app.use('/api/v1/features', featuresRoutes)
 app.use('/api/v1/messages', messageRoutes)
 app.use('/api/v1/images', imagesRoutes)
+app.use('/api/v1/requests', requestsRoutes)
 app.all('*', (req, res, next) => {
   next(new Error('URL not found'))
 })

@@ -6,12 +6,21 @@ const draftSchema = new mongoose.Schema({
     required: [true, 'An article must have a name'],
     minLength: [10, 'The name of the article is too short, please provide other name'],
     maxLength: [30, 'The name of the article is too long, please provide a name with a maximum length of 30 characters'],
-    trim: true
+    trim: true,
+    unique: true
   },
   author: {
     type: mongoose.Schema.ObjectId,
     ref: 'User',
     required: [true, 'An article have to be published by one author']
+  },
+  image: {
+    type: String,
+    default: '/img/default-article.png'
+  },
+  requested: {
+    type: Boolean,
+    default: false
   },
   resume: String,
   introduction: String,

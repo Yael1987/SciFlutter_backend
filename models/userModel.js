@@ -40,8 +40,12 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['author', 'admin', 'user'],
+    enum: ['author', 'user'],
     default: 'user'
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
   },
   photos: {
     profile: {
@@ -64,7 +68,7 @@ const userSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['unconfirmed', 'active', 'desactivated'],
+    enum: ['unconfirmed', 'active', 'deactivated'],
     default: 'unconfirmed'
   },
   passwordChangedAt: Date,
@@ -92,7 +96,7 @@ userSchema.virtual('articles', {
   ref: 'Article',
   foreignField: 'author',
   localField: '_id',
-  match: { status: 'published' }
+  count: true
 })
 
 userSchema.virtual('followers', {
@@ -113,30 +117,12 @@ userSchema.pre('save', async function (next) {
 })
 
 //  Look for all the queries that starts with 'find' and checks that just users that are currently active are returned
-userSchema.pre(/^find/, function (next) {
-  console.log(this.options.skip)
+// userSchema.pre(/^find/, function (next) {
+//   //  this points to the current query
+//   // this.find({ status: { $ne: 'deactivated' } })
 
-  if (this.options._recursed) {
-    return next()
-  }
-
-  //  this points to the current query
-  this.find({ status: { $ne: 'desactivated' } })
-  console.log('Find')
-
-  next()
-})
-
-userSchema.pre(/^find/, function (next) {
-  if (this.options._recursed) {
-    return next()
-  }
-
-  console.log('Populate')
-
-  this.populate({ path: 'articles followers', retainNullValues: true, options: { skip: true } })
-  next()
-})
+//   next()
+// })
 
 userSchema.methods.correctPassword = async function (candidatePassword, password) {
   return await bcrypt.compare(candidatePassword, password)

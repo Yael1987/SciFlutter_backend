@@ -1,3 +1,4 @@
+import mongoose from 'mongoose'
 import Article from '../models/articleModel.js'
 import Chat from '../models/chatModel.js'
 import Draft from '../models/draftModel.js'
@@ -22,22 +23,124 @@ class UserController extends BaseController {
   })
 
   getAuthors = catchAsync(async (req, res, next) => {
-    await this.getDocuments(User, {
-      filter: { role: 'author' },
-      query: req.query,
-      sendResponse: true,
-      res,
-      message: 'All authors received from the database'
+    const authors = await User.aggregate([
+      {
+        $match: { role: 'author', status: { $ne: 'deactivated' } }
+      },
+      {
+        $lookup: {
+          from: 'articles',
+          localField: '_id',
+          foreignField: 'author',
+          as: 'articles'
+        }
+      },
+      {
+        $lookup: {
+          from: 'follows',
+          localField: '_id',
+          foreignField: 'authorId',
+          as: 'followers'
+        }
+      },
+      {
+        $unwind: { path: '$articles', preserveNullAndEmptyArrays: true }
+      },
+      {
+        $group: {
+          _id: '$_id',
+          name: { $first: '$name' },
+          lastName: { $first: '$lastName' },
+          discipline: { $first: '$discipline' },
+          followers: { $sum: { $cond: { if: { $isArray: '$followers' }, then: 1, else: 0 } } },
+          articles: { $sum: 1 },
+          likes: { $sum: '$articles.likes' }
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          lastName: 1,
+          discipline: 1,
+          followers: 1,
+          articles: 1,
+          likes: 1
+        }
+      }
+    ])
+
+    this.sendResponse(res, 200, {
+      message: 'All authors received from the database',
+      results: authors.length,
+      data: {
+        authors
+      }
+    })
+  })
+
+  getUserStats = catchAsync(async (req, res, next) => {
+    const userStats = await User.aggregate([
+      {
+        $match: { _id: new mongoose.Types.ObjectId(req.params.id) }
+      },
+      {
+        $lookup: {
+          from: 'articles',
+          localField: '_id',
+          foreignField: 'author',
+          as: 'articles'
+        }
+      },
+      {
+        $lookup: {
+          from: 'follows',
+          localField: '_id',
+          foreignField: 'authorId',
+          as: 'followers'
+        }
+      },
+      {
+        $unwind: { path: '$articles', preserveNullAndEmptyArrays: true }
+      },
+      {
+        $group: {
+          _id: '$author',
+          followers: { $sum: { $cond: { if: { $isArray: '$followers' }, then: 1, else: 0 } } },
+          articles: { $sum: 1 },
+          likes: { $sum: '$articles.likes' }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          followers: 1,
+          articles: 1,
+          likes: 1
+        }
+      }
+    ])
+
+    if (!userStats.length) return next(new AppError('And error has been ocurred searching the user data, please verify that the user exist', 404))
+
+    this.sendResponse(res, 200, {
+      message: 'User stats retrieved from database',
+      data: {
+        stats: userStats[0]
+      }
     })
   })
 
   getOneUser = catchAsync(async (req, res, next) => {
-    // const user = User.findById(req.params.id).populate('articles followers')
+    const user = await User.findOne({ _id: req.params.id, status: { $ne: 'deactivated' } }).select('-__v -email -twoStepsAuthentication -status')
 
-    await this.getDocumentById(User, req.params.id, {
-      sendResponse: true,
-      res,
-      message: 'User received from the database'
+    if (!user) return next(new AppError('User not found', 404))
+
+    this.sendResponse(res, 200, {
+      message: 'User retrieved from database',
+      data: {
+        user
+      }
     })
   })
 
@@ -46,11 +149,11 @@ class UserController extends BaseController {
 
     if (!user) return next(new AppError('User not found', 404))
 
-    const whiteList = ['name', 'lastName', 'email', 'photos', 'phoneNumber']
+    const whiteList = ['name', 'lastName', 'email', 'photos', 'phoneNumber', 'photos[profile]', 'photos[cover]']
     const camposActualizar = {}
 
     if ((req.body.description || req.body.socialLinks) && req.user.role === 'author') {
-      whiteList.push('description', 'socialLinks')
+      whiteList.push('description', 'socialLinks', 'discipline')
     }
 
     Object.keys(req.body).forEach(campo => {
@@ -58,13 +161,23 @@ class UserController extends BaseController {
         if (campo === 'photos') {
           camposActualizar.photos = {
             cover:
-              req.body.photos.cover ||
-              req.user.photos.cover ||
-              'defaultCoverPic.jpg',
+              camposActualizar.photos?.cover ||
+              req.body.photos?.cover ||
+              req.user.photos.cover,
             profile:
-              req.body.photos.profile ||
-              req.user.photos.profile ||
-              'defaultProfilePic.jpg'
+              camposActualizar.photos?.profile ||
+              req.body.photos?.profile ||
+              req.user.photos.profile
+          }
+        } else if (campo === 'photos[profile]') {
+          camposActualizar.photos = {
+            cover: camposActualizar.photos?.cover || req.body.photos?.cover || req.user.photos.cover,
+            profile: req.body[campo]
+          }
+        } else if (campo === 'photos[cover]') {
+          camposActualizar.photos = {
+            cover: req.body[campo],
+            profile: camposActualizar.photos?.profile || req.body.photos?.profile || req.user.photos.profile
           }
         } else { camposActualizar[campo] = req.body[campo] }
       }
@@ -77,14 +190,24 @@ class UserController extends BaseController {
     })
   })
 
-  getMe = catchAsync(async (req, res, next) => {
-    const user = await User.findById(req.user.id)
+  deactivateMe = catchAsync(async (req, res, next) => {
+    const user = await User.findById(req.user.id).select('+password')
+
     if (!user) return next(new AppError('User not found', 404))
 
-    this.sendResponse(res, 200, {
-      data: {
-        user
-      },
+    if (!(await user.correctPassword(req.body.password, user.password))) return next(new AppError('Invalid password, please try again', 400))
+
+    await this.updateDocumentById(User, req.user.id, { status: 'deactivated' }, {
+      sendResponse: true,
+      res,
+      message: 'User account has been deactivated successfully'
+    })
+  })
+
+  getMe = catchAsync(async (req, res, next) => {
+    await this.getDocumentById(User, req.user.id, {
+      sendResponse: true,
+      res,
       message: 'Logged user retreived from database'
     })
   })

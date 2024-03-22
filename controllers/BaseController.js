@@ -23,7 +23,9 @@ export default class BaseController {
     if (options.sendResponse) {
       return this.sendResponse(options.res, 201, {
         message: options.message,
-        data: documentCreated
+        data: {
+          [Model.modelName.toLowerCase()]: documentCreated
+        }
       })
     }
 
@@ -41,7 +43,7 @@ export default class BaseController {
       justFirst: false
     }
   ) {
-    const features = new APIFeatures(Model.find(options.filter), options.query)
+    const { features, totalPages } = await new APIFeatures(Model.find(options.filter), options.query)
       .filter()
       .sort()
       .limitFields()
@@ -53,7 +55,10 @@ export default class BaseController {
       return this.sendResponse(options.res, 200, {
         message: options.message,
         results: documents.length,
-        data: documents
+        pages: totalPages,
+        data: {
+          [Model.modelName.toLowerCase() + 's']: documents
+        }
       })
     }
 
@@ -78,7 +83,9 @@ export default class BaseController {
     if (options.sendResponse) {
       return this.sendResponse(options.res, 200, {
         message: options.message,
-        data: document
+        data: {
+          [Model.modelName.toLowerCase()]: document
+        }
       })
     }
 
@@ -100,7 +107,9 @@ export default class BaseController {
     if (options.sendResponse) {
       return this.sendResponse(options.res, 200, {
         message: options.message,
-        data: updatedDocument
+        data: {
+          [Model.modelName.toLowerCase()]: updatedDocument
+        }
       })
     }
 
@@ -140,7 +149,7 @@ export default class BaseController {
     await Model.findByIdAndDelete(id)
 
     if (options.sendResponse) {
-      return this.sendResponse(options.res, 204, {
+      return this.sendResponse(options.res, 200, {
         message: options.message
       })
     }
@@ -153,8 +162,10 @@ export default class BaseController {
   }) {
     await Model.deleteMany(filter)
 
+    // if (response.deletedCount === 0) throw new AppError(`${Model.modelName} not found`, 404)
+
     if (options.sendResponse) {
-      return this.sendResponse(options.res, 204, {
+      return this.sendResponse(options.res, 200, {
         message: options.message
       })
     }

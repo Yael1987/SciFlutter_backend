@@ -101,8 +101,8 @@ class AuthenticationController extends BaseController {
 
     if (!(await user.correctPassword(password, user.password))) return next(new AppError('Incorrect password, please try it again', 400))
 
-    if (user.status === 'desactivated') {
-      user = await this.updateDocumentById(User, user.id, { status: 'active' })
+    if (user.status === 'deactivated') {
+      user = this.updateDocumentById(User, user._id, { status: 'active' })
     }
 
     this.createToken(user, res, req, 200, {
@@ -115,6 +115,10 @@ class AuthenticationController extends BaseController {
 
   restrictTo = (...roles) => {
     return (req, res, next) => {
+      if (roles.includes('admin') && req.user.isAdmin) return next()
+
+      console.log('Fail')
+
       if (!roles.includes(req.user.role)) {
         return next(new AppError('Your are not authorized to access this route', 403))
       }
@@ -235,8 +239,6 @@ class AuthenticationController extends BaseController {
   }
 
   updatePassword = catchAsync(async (req, res, next) => {
-    console.log(req.user)
-
     const user = await User.findById(req.user.id).select('+password')
 
     if (!user) return next(new AppError('User not found', 404))

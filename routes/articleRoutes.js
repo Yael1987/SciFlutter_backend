@@ -11,6 +11,7 @@ const router = express.Router()
 router.use(fileUpload())
 
 router.get('/saves', authController.protectRoute, articleController.getSavedArticles)
+router.get('/myArticles', authController.protectRoute, articleController.getMyArticles)
 
 router.get('/', articleController.getArticles) //  Obtener todos los articulos
 router.get('/drafts', authController.protectRoute, articleController.getDrafts) //  Obtener todos los articulos
@@ -27,10 +28,13 @@ router.post('/publishDraft/:draftId', articleController.clearDraft, uploadArticl
 
 router.route('/drafts')
   .post(authController.isVerified, articleController.createDraft)
-  .get(articleController.getDrafts)
+
+router.route('/copyDraft/:draftId')
+  .post(authController.isVerified, articleController.copyDraft)
 
 router.route('/drafts/:articleId')
-  .patch(articleController.saveDraftChanges)
+  .get(articleController.getOneDraft)
+  .patch(uploadArticleMainImg, articleController.saveDraftChanges)
   .delete(articleController.deleteDraft)
 
 router.route('/:articleId')

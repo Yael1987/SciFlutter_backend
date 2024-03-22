@@ -6,7 +6,8 @@ const router = express.Router()
 
 router.use(authController.protectRoute)
 
-// router.get('/followAuthor', )
+router.get('/follow/:authorId', featuresController.checkAuthorFollow)
+router.get('/like/:articleId', featuresController.checkArticleLike)
 
 router.route('/saveArticle/:id')
   .post(featuresController.createFeatureDocument('Favorite'))

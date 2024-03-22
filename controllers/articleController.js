@@ -1,3 +1,4 @@
+import mongoose from 'mongoose'
 import Article from '../models/articleModel.js'
 import Draft from '../models/draftModel.js'
 import Favorite from '../models/favoriteModel.js'
@@ -6,6 +7,7 @@ import AppError from '../utils/AppError.js'
 import catchAsync from '../utils/catchAsync.js'
 import { deleteFile } from '../utils/minio.js'
 import BaseController from './BaseController.js'
+import Request from '../models/requestModel.js'
 
 class ArticleController extends BaseController {
   createArticle = catchAsync(async (req, res, next) => {
@@ -20,10 +22,21 @@ class ArticleController extends BaseController {
       bibliography: req.body.bibliography
     }
 
-    await this.createDocument(articleObj, Article, {
-      sendResponse: true,
-      res,
-      message: 'Article created successfully'
+    const articleCreated = await this.createDocument(articleObj, Article)
+
+    const requestBody = {
+      requester: req.user.id,
+      article: articleCreated.id,
+      type: 'publish'
+    }
+
+    await this.createDocument(requestBody, Request)
+
+    this.sendResponse(res, 200, {
+      message: 'Article created successfully',
+      data: {
+        article: articleCreated
+      }
     })
   })
 
@@ -31,7 +44,8 @@ class ArticleController extends BaseController {
     const draftObj = {
       name: req.body.name,
       author: req.user.id,
-      discipline: req.user.discipline || req.body.discipline
+      discipline: req.body.discipline || req.user.discipline,
+      resume: req.body.resume
     }
 
     await this.createDocument(draftObj, Draft, {
@@ -41,9 +55,48 @@ class ArticleController extends BaseController {
     })
   })
 
+  copyDraft = catchAsync(async (req, res, next) => {
+    const drafts = await this.getDocuments(Draft, {
+      filter: { author: req.user._id },
+      query: req.query
+    })
+
+    if (drafts.length === 3) return next(new AppError('You cannot have more than three drafts', 403))
+
+    const draftToCopy = await this.getDocumentById(Draft, req.params.draftId)
+
+    if (req.user._id.toString() !== draftToCopy.author.toString()) return next(new AppError('You cannot copy a draft that not belong you', 403))
+
+    const body = {
+      name: `${draftToCopy.name} (copy)`,
+      author: draftToCopy.author,
+      resume: draftToCopy.resume,
+      introduction: draftToCopy.introduction,
+      discipline: draftToCopy.discipline,
+      content: draftToCopy.content,
+      bibliography: draftToCopy.bibliography
+    }
+
+    await this.createDocument(body, Draft)
+
+    await this.sendResponse(res, 200, {
+      message: 'Draft copied succesfully'
+    })
+  })
+
   getArticles = catchAsync(async (req, res, next) => {
     await this.getDocuments(Article, {
       filter: { status: { $eq: 'published' } },
+      query: req.query,
+      sendResponse: true,
+      res,
+      message: 'Articles received from the database'
+    })
+  })
+
+  getMyArticles = catchAsync(async (req, res, next) => {
+    await this.getDocuments(Article, {
+      filter: { author: req.user._id },
       query: req.query,
       sendResponse: true,
       res,
@@ -88,7 +141,7 @@ class ArticleController extends BaseController {
   getSavedArticles = catchAsync(async (req, res, next) => {
     const favoriteArticles = await Favorite.aggregate([
       {
-        $match: { userId: req.user.id }
+        $match: { userId: new mongoose.Types.ObjectId(req.user.id) }
       },
       {
         $lookup: {
@@ -117,15 +170,16 @@ class ArticleController extends BaseController {
           _id: '$article._id',
           name: '$article.name',
           image: '$article.image',
-          author: '$article.author',
+          author: {
+            name: '$article.author.name',
+            lastName: '$article.author.lastName',
+            photos: {
+              profile: '$article.author.photos.profile'
+            }
+          },
           resume: '$article.resume',
-          introduction: '$article.introduction',
           discipline: '$article.discipline',
-          content: '$article.content',
-          bibliography: '$article.bibliography',
-          createdAt: '$article.createdAt',
-          status: '$article.status',
-          favoriteId: '$_id'
+          createdAt: '$article.createdAt'
         }
       }
     ])
@@ -140,7 +194,7 @@ class ArticleController extends BaseController {
 
   saveDraftChanges = catchAsync(async (req, res, next) => {
     const draft = await this.getDocumentById(Draft, req.params.articleId)
-    const allowedFields = ['resume', 'content', 'introduction', 'bibliography']
+    const allowedFields = ['resume', 'content', 'introduction', 'bibliography', 'image', 'name', 'discipline']
 
     if (!draft) return next(new AppError('Draft not found with that id', 404))
 
@@ -157,7 +211,7 @@ class ArticleController extends BaseController {
     this.sendResponse(res, 200, {
       message: 'Changes saved successfully',
       data: {
-        draftArticle: draft
+        draft
       }
     })
   })
@@ -171,10 +225,10 @@ class ArticleController extends BaseController {
 
     await deleteFile(req.article.image)
 
-    await this.deleteDocuments(Favorite, { articleId: req.article.id })
-    await this.deleteDocuments(Like, { articleId: req.article.id })
+    await this.deleteDocuments(Favorite, { articleId: req.article._id })
+    await this.deleteDocuments(Like, { articleId: req.article._id })
 
-    await this.deleteDocumentById(Article, req.article.id, {
+    await this.deleteDocumentById(Article, req.article._id, {
       sendResponse: true,
       res,
       message: 'Article deleted successfully'
@@ -182,11 +236,17 @@ class ArticleController extends BaseController {
   })
 
   deleteDraft = catchAsync(async (req, res, next) => {
-    if (req.article.images.length > 0) {
-      await Promise.all(req.article.images.map(async imageUrl => await deleteFile(imageUrl)))
+    const draftToDelete = await this.getDocumentById(Draft, req.params.articleId)
+
+    if (draftToDelete.images?.length > 0) {
+      await Promise.all(draftToDelete.images.map(async imageUrl => {
+        if (imageUrl.startsWith('/')) return null
+
+        return await deleteFile(imageUrl)
+      }))
     }
 
-    await this.deleteDocumentById(Draft, req.article.id, {
+    await this.deleteDocumentById(Draft, draftToDelete.id, {
       sendResponse: true,
       res,
       message: 'Draft deleted successfully'
@@ -217,9 +277,12 @@ class ArticleController extends BaseController {
     req.body.author = draft.author
     req.body.resume = draft.resume
     req.body.introduction = draft.introduction
+    req.body.image = draft.image
     req.body.discipline = draft.discipline || req.user.discipline
     req.body.content = draft.content
     req.body.bibliography = draft.bibliography
+
+    await this.updateDocumentById(Draft, req.params.draftId, { requested: true })
 
     next()
   })
@@ -229,7 +292,7 @@ class ArticleController extends BaseController {
 
     if (!article) return next(new AppError('Article not found', 404))
 
-    if (req.user.id !== article.author.toString()) return next(new AppError('You cannot update an article that you do not own', 403))
+    if (req.user._id.toString() !== article.author._id.toString()) return next(new AppError('You cannot update an article that you do not own', 403))
 
     req.article = article
 

@@ -10,7 +10,7 @@ const articleSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    default: 'article-default.jpg'
+    default: '/img/default-article.png'
   },
   author: {
     type: mongoose.Schema.ObjectId,
@@ -45,17 +45,34 @@ const articleSchema = new mongoose.Schema({
     type: String,
     default: 'requested',
     enum: ['requested', 'published']
+  },
+  likes: {
+    type: Number,
+    default: 0
   }
 }, {
   toJSON: { virtuals: true },
   toObject: { virtuals: true }
 })
 
+// articleSchema.virtual('likes', {
+//   ref: 'Like',
+//   foreignField: 'articleId',
+//   localField: '_id',
+//   count: true
+// })
+
 articleSchema.pre(/^find/, function (next) {
-  this.populate({
+  this.find({ status: { $ne: 'requested' } }).populate({
     path: 'author',
     select: 'name lastName photos.profile'
   })
+
+  next()
+})
+
+articleSchema.pre('find', function (next) {
+  this.select('-introduction -bibliography -content -status -likes')
 
   next()
 })

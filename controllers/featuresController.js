@@ -13,17 +13,57 @@ export {
 }
 
 class FeaturesController extends BaseController {
-  // getFollowedAuthor = catchAsync(async (req, res, next) => {
+  checkAuthorFollow = catchAsync(async (req, res, next) => {
+    const data = {}
+    const follow = await Follow.find({ authorId: req.params.authorId, userId: req.user.id })
 
-  // })
+    if (!follow.length) data.follow = false
+    else data.follow = true
+
+    this.sendResponse(res, 200, {
+      message: 'Follow check completed',
+      data
+    })
+  })
+
+  checkArticleLike = catchAsync(async (req, res, next) => {
+    const data = {}
+
+    const like = await Like.find({ articleId: req.params.articleId, userId: req.user.id })
+
+    if (!like.length) data.like = false
+    else data.like = true
+
+    this.sendResponse(res, 200, {
+      message: 'Like check completed',
+      data
+    })
+  })
 
   createFeatureDocument = (modelName) => catchAsync(async (req, res, next) => {
     if (req.user.id === req.params.id) return next(new AppError('Cannot follow yourself', 403))
+
     if (modelName === 'Follow') {
       const userToFollow = await this.getDocumentById(User, req.params.id)
 
       if (userToFollow.role !== 'author') return next(new AppError('Just authors can be followed', 403))
     }
+
+    let checkDocumentExist
+
+    switch (modelName) {
+      case 'Follow':
+        checkDocumentExist = await Follow.findOne({ userId: req.user._id, authorId: req.params.id })
+        break
+      case 'Like':
+        checkDocumentExist = await Like.findOne({ userId: req.user._id, articleId: req.params.id })
+        break
+      case 'Favorite':
+        checkDocumentExist = await Favorite.findOne({ userId: req.user._id, articleId: req.params.id })
+        break
+    }
+
+    if (checkDocumentExist) return next(new AppError('This document already exist', 400))
 
     const documentData = { userId: req.user.id }
     let model
@@ -51,27 +91,23 @@ class FeaturesController extends BaseController {
 
     if (!model) return next(new AppError('No such model found with that name', 404))
 
-    await this.createDocument(
-      documentData,
-      model,
-      {
-        sendResponse: true,
-        res,
-        message
-      }
-    )
+    await this.createDocument(documentData, model)
+
+    this.sendResponse(res, 200, {
+      message
+    })
   })
 
   deleteFeatureDocument = (modelName) => catchAsync(async (req, res, next) => {
-    const filter = { userId: req.user.id }
+    const filter = { userId: req.user._id }
     let model
     let message
 
     const features = {
       Favorite () {
-        filter.authorId = req.params.id
+        filter.articleId = req.params.id
         model = Favorite
-        message = 'Article deleted to favorites'
+        message = 'Article deleted from favorites'
       },
       Follow () {
         filter.authorId = req.params.id
@@ -88,6 +124,9 @@ class FeaturesController extends BaseController {
     features[modelName]()
 
     if (!model) return next(new AppError('No such model found with that name', 404))
+
+    console.log(filter)
+    console.log(model)
 
     await this.deleteDocuments(
       model,
