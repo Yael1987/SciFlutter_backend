@@ -11,14 +11,19 @@ import AppError from '../utils/AppError.js'
 import catchAsync from '../utils/catchAsync.js'
 import { deleteFile } from '../utils/minio.js'
 import BaseController from './BaseController.js'
+import UserService from '../services/UserService.js'
 
 class UserController extends BaseController {
+  userService = new UserService()
+
   getAllUsers = catchAsync(async (req, res, next) => {
-    await this.getDocuments(User, {
-      sendResponse: true,
-      res,
-      query: req.query,
-      message: 'All users received from the database'
+    const response = await this.userService.getAllUsers(req.query)
+
+    if (!response.data.users) return next(new AppError('Not users found', 404))
+
+    this.sendResponse(res, 200, {
+      message: 'Users received from the database',
+      ...response
     })
   })
 
@@ -132,7 +137,7 @@ class UserController extends BaseController {
   })
 
   getOneUser = catchAsync(async (req, res, next) => {
-    const user = await User.findOne({ _id: req.params.id, status: { $ne: 'deactivated' } }).select('-__v -email -twoStepsAuthentication -status')
+    const user = await this.userService.getUserById(req.params.userId)
 
     if (!user) return next(new AppError('User not found', 404))
 

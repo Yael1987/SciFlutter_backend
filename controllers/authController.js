@@ -117,8 +117,6 @@ class AuthenticationController extends BaseController {
     return (req, res, next) => {
       if (roles.includes('admin') && req.user.isAdmin) return next()
 
-      console.log('Fail')
-
       if (!roles.includes(req.user.role)) {
         return next(new AppError('Your are not authorized to access this route', 403))
       }
