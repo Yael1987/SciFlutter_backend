@@ -1,4 +1,4 @@
-import APIFeatures from '../utils/apiFeatures.js'
+import APIFeatures from '../utils/ApiFeatures.js'
 
 class BaseRepository {
   model
@@ -16,42 +16,46 @@ class BaseRepository {
 
     const documents = await features.query
 
-    return { pages: totalPages, results: documents.length, documents }
+    return { pages: totalPages, results: documents.length, [this.model.modelName.toLowerCase() + 's']: documents }
   }
 
-  async getDocumentById (id) {
-    const document = await this.model.findById(id)
-
-    return document
+  getDocument = (filter = {}) => {
+    return this.model.findOne(filter)
   }
 
-  async createDocument (data) {
-    const documentCreated = await this.model.create(data)
-
-    return documentCreated
+  getDocumentById = (id) => {
+    return this.model.findById(id)
   }
 
-  async updateDocument (filter, data) {
-    const updatedDocument = await this.model.findOneAndUpdate(filter, data)
-
-    return updatedDocument
+  createDocument = (data) => {
+    return this.model.create(data)
   }
 
-  async updateDocumentById (id, data) {
-    const documentUpdated = await this.model.findByIdAndUpdate(id, data, {
+  updateDocument = (filter, data) => {
+    return this.model.findOneAndUpdate(filter, data)
+  }
+
+  updateDocuments = (filter, data) => {
+    return this.model.updateMany(filter, data)
+  }
+
+  updateDocumentById = (id, data) => {
+    return this.model.findByIdAndUpdate(id, data, {
       new: true,
       runValidators: true
     })
-
-    return documentUpdated
   }
 
-  async deleteDocumentById (id) {
-    await this.model.findByIdAndDelete(id)
+  deleteDocumentById (id) {
+    return this.model.findByIdAndDelete(id)
   }
 
-  async deleteDocuments (filter) {
-    await this.model.deleteMany(filter)
+  deleteDocuments (filter) {
+    return this.model.deleteMany(filter)
+  }
+
+  deleteDocument (filter) {
+    return this.model.deleteOne(filter)
   }
 }
 

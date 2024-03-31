@@ -1,8 +1,8 @@
 import express from 'express'
 import fileUpload from 'express-fileupload'
 
-import { authController } from '../controllers/authController.js'
-import userController from '../controllers/userController.js'
+import { authController } from '../controllers/AuthController.js'
+import userController from '../controllers/UserController.js'
 import { saveUserPics } from '../controllers/imagesController.js'
 
 const router = express.Router()
@@ -16,6 +16,7 @@ router.post('/forgotPassword', authController.forgotPassword) //  Recover my acc
 router.patch('/resetPassword/:token', authController.resetPassword) //  Reset my password, the token is sent on email
 router.patch('/confirm/:token', authController.activateAccount) //  This change the account state to active, the token is sent on email
 
+router.get('/filters', userController.getAuthorFilters)
 router.get('/', userController.getAllUsers) //  We retreive the users, you can filter the results using the filter params
 router.get('/me', authController.protectRoute, userController.getMe)
 router.get('/authors', userController.getAuthors) //  We retreive just the users that are authors

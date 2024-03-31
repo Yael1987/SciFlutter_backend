@@ -19,7 +19,7 @@ export async function uploadFile (file, fileName) {
 }
 
 export async function deleteFile (imgUrl) {
-  const fileName = imgUrl.replace('http://localhost:9000/sciflutter/', '').replace('http://127.0.0.1:9000/sciflutter/')
+  const fileName = imgUrl.replace('http://localhost:9000/sciflutter/', '').replace('http://127.0.0.1:9000/sciflutter/', '')
 
   const result = await minioClient.removeObject('sciflutter', fileName)
 

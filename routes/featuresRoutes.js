@@ -1,6 +1,6 @@
 import express from 'express'
-import featuresController, { saveAsPdf } from '../controllers/featuresController.js'
-import { authController } from '../controllers/authController.js'
+import featuresController from '../controllers/FeaturesController.js'
+import { authController } from '../controllers/AuthController.js'
 
 const router = express.Router()
 
@@ -23,7 +23,7 @@ router.route('/followAuthor/:id')
   .post(featuresController.createFeatureDocument('Follow'))
   .delete(featuresController.deleteFeatureDocument('Follow'))
 
-router.get('/savePdf/:articleId', saveAsPdf)
+// router.get('/savePdf/:articleId', saveAsPdf)
 
 export {
   router

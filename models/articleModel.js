@@ -27,7 +27,11 @@ const articleSchema = new mongoose.Schema({
     // required: [true, 'An article can be published without introduction']
     // minLength: [200, 'Your article is too short please try again with at least 200 characters']
   },
-  discipline: String,
+  discipline: {
+    type: String,
+    trim: true,
+    lowerCase: true
+  },
   content: {
     type: String,
     required: [true, 'An article can be published without content']
@@ -62,8 +66,20 @@ const articleSchema = new mongoose.Schema({
 //   count: true
 // })
 
+articleSchema.pre('find', function (next) {
+  this.find({ status: { $ne: 'requested' } })
+
+  next()
+})
+
+articleSchema.pre('findById', function (next) {
+  this.find({ status: { $ne: 'requested' } })
+
+  next()
+})
+
 articleSchema.pre(/^find/, function (next) {
-  this.find({ status: { $ne: 'requested' } }).populate({
+  this.populate({
     path: 'author',
     select: 'name lastName photos.profile'
   })

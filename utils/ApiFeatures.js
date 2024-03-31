@@ -14,16 +14,28 @@ export default class APIFeatures {
     let queryStr = JSON.stringify(queryObj)
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`)
 
-    this.query = this.query.find(JSON.parse(queryStr))
+    const filterObj = JSON.parse(queryStr)
+
+    if (filterObj.name) filterObj.name = { $regex: filterObj.name, $options: 'i' }
+    if (filterObj.discipline) filterObj.discipline = { $regex: filterObj.discipline, $options: 'i' }
+    if (filterObj.year) {
+      const year = parseInt(filterObj.year)
+
+      filterObj.createdAt = { $gte: new Date(year, 0), $lt: new Date(year + 1, 0) }
+      delete filterObj.year
+    }
+
+    this.query = this.query.find(filterObj)
     return this
   }
 
   sort () {
     if (this.queryString?.sort) {
       const sortBy = this.queryString.sort.split(',').join(' ')
+
       this.query = this.query.sort(sortBy)
     } else {
-      this.query = this.query.sort('createdAt')
+      this.query = this.query.sort('-createdAt')
     }
 
     return this
@@ -47,7 +59,8 @@ export default class APIFeatures {
 
     this.query = this.query.skip(skip).limit(limit)
 
-    const totalDocs = await this.query.model.countDocuments(this.query)
+    const countQuery = { ...this.query._conditions }
+    const totalDocs = await this.query.model.countDocuments(countQuery)
 
     const totalPages = Math.ceil(totalDocs / limit)
 
