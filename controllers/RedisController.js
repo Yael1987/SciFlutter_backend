@@ -2,10 +2,7 @@ import redis from 'redis'
 
 export default class RedisController {
   constructor () {
-    this.client = redis.createClient({
-      host: process.env.REDIS_HOST,
-      port: 6379
-    })
+    this.client = redis.createClient(process.env.REDIS_URL)
   }
 
   connect = async () => {
