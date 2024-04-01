@@ -2,7 +2,11 @@ import redis from 'redis'
 
 export default class RedisController {
   constructor () {
-    this.client = redis.createClient(process.env.REDIS_URL)
+    this.client = redis.createClient({
+      url: process.env.REDIS_URL
+    })
+
+    console.log(process.env.REDIS_URL)
   }
 
   connect = async () => {
