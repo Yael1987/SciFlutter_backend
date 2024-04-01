@@ -62,7 +62,7 @@ class UserRepository extends BaseRepository {
       }
     ]
 
-    const features = new PipelineFeatures(pipeline, query).filter().sort()
+    const features = new PipelineFeatures(pipeline, query).filter().sort().limit()
 
     return User.aggregate(features.pipeline)
   }

@@ -46,7 +46,7 @@ class FeaturesController extends BaseController {
 
     if (checkDocumentExist) return next(new AppError('This document already exist', 400))
 
-    const message = await this.featuresService(modelName, req)
+    const message = await this.featuresService.createDocument(modelName, req)
 
     this.sendResponse(res, 200, {
       message

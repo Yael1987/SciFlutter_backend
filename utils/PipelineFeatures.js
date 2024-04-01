@@ -46,4 +46,12 @@ export default class PipelineFeatures {
 
     return this
   }
+
+  limit = () => {
+    if (this.queryString?.limit) {
+      this.pipeline.push({ $limit: parseInt(this.queryString.limit) })
+    }
+
+    return this
+  }
 }
