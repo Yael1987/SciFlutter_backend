@@ -1,80 +1,66 @@
-import Chat from "../models/chatModel.js";
-import Message from "../models/messageModel.js";
-import catchAsync from "../utils/catchAsync.js";
-import BaseController from "./BaseController.js";
+import BaseController from './BaseController.js'
 
-const updateOneChat = (req, res) => { };
-const deleteOneChat = (req, res) => { };
-
-export {
-  updateOneChat,
-  deleteOneChat
-}
+import catchAsync from '../utils/catchAsync.js'
+import MessageService from '../services/MessageService.js'
 
 class MessageController extends BaseController {
+  messageService = new MessageService()
+
+  // Refactored
   sendMessage = catchAsync(async (req, res, next) => {
-    let id;
-    const chatExists = await this.getDocuments(Chat, {
-      filter: {users: {$all: [req.params.receiverId, req.body.sender]}},
-      justFirst: true,
-    });
+    await this.messageService.sendMessage(req)
 
-    if (chatExists) {
-      id = chatExists.id;
+    this.sendResponse(res, 200, {
+      message: 'Message sent successfully'
+    })
+  })
 
-      chatExists.addUserToReadBy(req.body.sender);
-      chatExists.removeReceiverFromReadBy(req.body.sender);
-
-      await chatExists.save();
-    } else {
-      const newChat = await this.createDocument(
-        {
-          users: [req.params.receiverId, req.body.sender],
-          readBy: [req.body.sender],
-        },
-        Chat
-      );
-
-      id = newChat.id;
-    }
-
-    await this.createDocument(
-      {
-        ...req.body,
-        receiver: req.params.receiverId,
-        chatId: id,
-      },
-      Message,
-      {
-        sendResponse: true,
-        res,
-        message: "Message sent successfully",
-      }
-    );
-  });
-
+  // Refactored
   getChats = catchAsync(async (req, res, next) => {
-    await this.getDocuments(Chat, {
-      filter: {users: req.body.userId},
-      sendResponse: true,
-      res,
-      message: "Chats received from the database",
-    });
-  });
+    const data = await this.messageService.getUserChats(req.user._id)
 
+    this.sendResponse(res, 200, {
+      message: 'Chats received successfully',
+      ...data
+    })
+  })
+
+  // Refactored
   getOneChat = catchAsync(async (req, res, next) => {
-    const currentChat = await this.getDocumentById(Chat, req.params.chatId);
+    const data = await this.messageService.getChatMessages(req.params.chatId, req.user._id, req.query)
 
-    currentChat.addUserToReadBy(req.body.userId);
-    await currentChat.save();
+    this.sendResponse(res, 200, {
+      message: 'Messages received from the database',
+      ...data
+    })
+  })
 
-    await this.getDocuments(Message, {
-      filter: {chatId: currentChat.id},
-      sendResponse: true,
-      res,
-      message: "Messages received from the database",
-    });
-  });
+  // Refactored
+  unsendMessage = catchAsync(async (req, res, next) => {
+    await this.messageService.unsendMessage(req.params.messageId, req.user.id)
+
+    this.sendResponse(res, 200, {
+      message: 'Message unsent'
+    })
+  })
+
+  // Refactored
+  deleteMessageForMe = catchAsync(async (req, res, next) => {
+    await this.messageService.deleteMessageForMe(req.params.messageId, req.user.id)
+
+    this.sendResponse(res, 200, {
+      message: 'Deleted successfully'
+    })
+  })
+
+  // Refactored
+  clearChat = catchAsync(async (req, res, next) => {
+    await this.messageService.clearChat(req.params.chatId, req.user.id)
+
+    this.sendResponse(res, 200, {
+      message: 'Chat cleared successfully'
+    })
+  })
 }
 
-export default new MessageController();
+export default new MessageController()

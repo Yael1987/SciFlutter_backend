@@ -1,21 +1,29 @@
-import express from "express";
-import { followAuthor, likeArticle, saveArticle, saveAsPdf, unfollowAuthor, unlikeArticle, unsaveArticle } from "../controllers/featuresController.js";
+import express from 'express'
+import featuresController from '../controllers/FeaturesController.js'
+import { authController } from '../controllers/AuthController.js'
 
-const router = express.Router();
+const router = express.Router()
 
-router.route("/saveArticle/:articleId")
-  .post(saveArticle)
-  .delete(unsaveArticle)
+router.use(authController.protectRoute)
 
-router.route("/likeArticle/:articleId")
-  .post(likeArticle)
-  .delete(unlikeArticle)
+router.get('/follow/:authorId', featuresController.checkAuthorFollow)
+router.get('/like/:articleId', featuresController.checkArticleLike)
 
-router.route("/followAuthor/:authorID")
-  .post(followAuthor)
-  .delete(unfollowAuthor)
+router.route('/saveArticle/:id')
+  .post(featuresController.createFeatureDocument('Favorite'))
+  .delete(featuresController.deleteFeatureDocument('Favorite'))
 
-router.get("/savePdf/:articleId", saveAsPdf)
+router.use(authController.isVerified)
+
+router.route('/likeArticle/:id')
+  .post(featuresController.createFeatureDocument('Like'))
+  .delete(featuresController.deleteFeatureDocument('Like'))
+
+router.route('/followAuthor/:id')
+  .post(featuresController.createFeatureDocument('Follow'))
+  .delete(featuresController.deleteFeatureDocument('Follow'))
+
+// router.get('/savePdf/:articleId', saveAsPdf)
 
 export {
   router
