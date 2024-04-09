@@ -1,4 +1,4 @@
-import { GetObjectCommand, ListObjectsCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { DeleteObjectCommand, GetObjectCommand, ListObjectsCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 // import fs from 'fs'
 
 const client = new S3Client({
@@ -19,6 +19,21 @@ export async function uploadFile (file, fileName) {
   const command = new PutObjectCommand(uploadParams)
 
   const result = await client.send(command)
+  return result
+}
+
+export const deleteFile = async (imgUrl) => {
+  const fileName = imgUrl.replace(`https://${process.env.AWS_BUCKET_HOST}/`, '')
+
+  const deleteParams = {
+    Bucket: process.env.AWS_BUCKET_NAME,
+    Key: fileName
+  }
+
+  const command = new DeleteObjectCommand(deleteParams)
+
+  const result = await client.send(command)
+
   return result
 }
 

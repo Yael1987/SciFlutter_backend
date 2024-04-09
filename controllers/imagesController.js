@@ -1,8 +1,8 @@
 import sharp from 'sharp'
 import catchAsync from '../utils/catchAsync.js'
-import { deleteFile, uploadFile } from '../utils/minio.js'
 import AppError from '../utils/AppError.js'
 import Draft from '../models/draftModel.js'
+import { deleteFile, uploadFile } from '../s3.js'
 
 export const saveUserPics = catchAsync(async (req, res, next) => {
   if (!req.files) return next()
@@ -16,20 +16,34 @@ export const saveUserPics = catchAsync(async (req, res, next) => {
       const fileName = `user-avatars/pic-${key}-${req.user.id}-${Date.now()}.jpeg`
 
       const compressFile = await sharp(file.data)
-        .toFormat('jpeg')
+        .toFormat('webp')
         .jpeg({ quality: 80 })
         .toBuffer()
 
-      const minioResponse = await uploadFile(compressFile, fileName)
+      const minioResponse = await uploadFile(compressFile, `${fileName}.webp`)
 
       if (minioResponse.err) {
         return next(new AppError('Error uploading image', 500))
       } else {
-        await deleteFile(req.user.photos[key])
+        if (!req.user.photos[key].startsWith('/')) { await deleteFile(req.user.photos[key]) }
 
-        req.body.photos[key] = `http://localhost:9000/sciflutter/${fileName}`
+        req.body.photos[key] = `https://${process.env.AWS_BUCKET_HOST}/${fileName}`
       }
     }
+  }
+
+  next()
+})
+
+export const deleteUserImages = catchAsync(async (req, res, next) => {
+  if (Object.keys(req.body).includes('photos[profile]')) {
+    await deleteFile(req.user.photos.profile)
+    return next()
+  }
+
+  if (Object.keys(req.body).includes('cover[cover]')) {
+    await deleteFile(req.user.photos.cover)
+    return next()
   }
 
   next()
@@ -43,16 +57,16 @@ export const uploadArticleMainImg = catchAsync(async (req, res, next) => {
     const fileName = `articles-main/${req.body.name.replace(' ', '_')}-${req.user.id}.jpeg`
 
     const compressFile = await sharp(file.data)
-      .toFormat('jpeg')
+      .toFormat('webp')
       .jpeg({ quality: 80 })
       .toBuffer()
 
-    const minioResponse = await uploadFile(compressFile, fileName)
+    const minioResponse = await uploadFile(compressFile, `${fileName}.webp`)
 
     if (minioResponse.err) {
       return next(new AppError('Error uploading image', 500))
     } else {
-      req.body.image = `http://localhost:9000/sciflutter/${fileName}`
+      req.body.image = `https://${process.env.AWS_BUCKET_HOST}/${fileName}`
     }
   }
 
@@ -68,11 +82,11 @@ export const uploadArticleImgs = catchAsync(async (req, res) => {
   const fileName = `articles-images/${draft.name.replace(' ', '_')}-${Date.now()}.jpeg`
 
   const compressFile = await sharp(file.data)
-    .toFormat('jpeg')
+    .toFormat('webp')
     .jpeg({ quality: 80 })
     .toBuffer()
 
-  const minioResponse = await uploadFile(compressFile, fileName)
+  const minioResponse = await uploadFile(compressFile, `${fileName}.webp`)
 
   // const result = await uploadFile(compressFile, `${fileName}.jpeg`)
 
@@ -85,11 +99,11 @@ export const uploadArticleImgs = catchAsync(async (req, res) => {
       error: { message: 'Failed to upload the image' }
     })
   } else {
-    draft.images.push(`http://localhost:9000/sciflutter/${fileName}`)
+    draft.images.push(`https://${process.env.AWS_BUCKET_HOST}/${fileName}`)
     await draft.save()
 
     return res.json({
-      url: `http://localhost:9000/sciflutter/${fileName}`
+      url: `https://${process.env.AWS_BUCKET_HOST}/${fileName}`
       // url: `http://localhost:9000/sciflutter/article-1700676352289.jpeg`,
     })
   }

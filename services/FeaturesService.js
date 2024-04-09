@@ -11,15 +11,15 @@ export default class FeaturesService {
   checkAuthorFollow = async (req) => {
     const follow = await this.followRepository.getDocument({ authorId: req.params.authorId, userId: req.user.id })
 
-    if (follow) return false
-    else return true
+    if (follow) return true
+    else return false
   }
 
   checkArticleLike = async (req) => {
     const like = await this.likeRepository.getDocument({ articleId: req.params.articleId, userId: req.user.id })
 
-    if (like) return false
-    else return true
+    if (like) return true
+    else return false
   }
 
   checkDocumentExist = async (modelName, req) => {

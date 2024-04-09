@@ -4,11 +4,13 @@ import RequestService from '../services/RequestService.js'
 import ArticleService from '../services/ArticleService.js'
 import DraftService from '../services/DraftService.js'
 import NotificationService from '../services/NotificationService.js'
+import UserService from '../services/UserService.js'
 
 class RequestController extends BaseController {
   requestService = new RequestService()
   articleService = new ArticleService()
   draftService = new DraftService()
+  userService = new UserService()
   notificationService = new NotificationService()
 
   getRequests = catchAsync(async (req, res, next) => {
@@ -44,6 +46,8 @@ class RequestController extends BaseController {
       message: req.body.message || 'Congratulations your article has been approved and published',
       type: 'success'
     }
+
+    if (article.author.role !== 'author') await this.userService.makeUserAuthor(article.author.id)
 
     await this.notificationService.sendNotification(notificationBody)
 

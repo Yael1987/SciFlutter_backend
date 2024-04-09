@@ -78,7 +78,7 @@ export default class AuthService extends UserService {
     const resetToken = user.createResetToken()
     await user.save({ validateBeforeSave: false })
 
-    const url = `${process.env.FRONTEND_URL}/restablecer/${resetToken}`
+    const url = `${process.env.FRONTEND_URL}/recover/${resetToken}`
 
     return { user, url }
   }

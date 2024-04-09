@@ -3,7 +3,7 @@ import fileUpload from 'express-fileupload'
 
 import { authController } from '../controllers/AuthController.js'
 import userController from '../controllers/UserController.js'
-import { saveUserPics } from '../controllers/imagesController.js'
+import { deleteUserImages, saveUserPics } from '../controllers/imagesController.js'
 
 const router = express.Router()
 
@@ -27,7 +27,7 @@ router.get('/:id/stats', userController.getUserStats) //  We retreive a user bas
 router.use(authController.protectRoute) //  Middleware that will protect some routes against unauthorized access, you need an access token for that
 
 router.route('/me')
-  .patch(authController.isVerified, saveUserPics, userController.updateUser) //  Updates the user information, except the password, this route is also for desactivate the user account
+  .patch(authController.isVerified, deleteUserImages, saveUserPics, userController.updateUser) //  Updates the user information, except the password, this route is also for desactivate the user account
   .delete(userController.deleteUser) //  Deletes the user account, for this you need to pass the userId and current password, this will delete the user account from db
 
 router.patch('/me/deactivateAccount', userController.deactivateMe)

@@ -1,6 +1,6 @@
 import DraftRepository from '../repository/DraftRespository.js'
+import { deleteFile } from '../s3.js'
 import AppError from '../utils/AppError.js'
-import { deleteFile } from '../utils/minio.js'
 
 export default class DraftService {
   draftRepository = new DraftRepository()

@@ -117,6 +117,10 @@ class UserService {
     return userUpdated
   }
 
+  makeUserAuthor = async (userId) => {
+    await this.userRepository.updateDocumentById(userId, { role: 'author' })
+  }
+
   deactivateMe = async (req) => {
     await this.verifyPassword({ _id: req.user.id }, req.body.password)
 
