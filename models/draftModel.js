@@ -22,7 +22,13 @@ const draftSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  resume: String,
+  resume: {
+    type: String,
+    required: [true, 'An article must have a resume'],
+    minLength: [200, 'The resume of the article is too short, please provide other name'],
+    maxLength: [500, 'The resume of the article is too long, please provide a name with a maximum length of 30 characters'],
+    trim: true
+  },
   introduction: String,
   discipline: String,
   content: String,
