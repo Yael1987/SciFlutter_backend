@@ -44,7 +44,7 @@ app.use(helmet())
 
 // cors config
 app.use(cors({
-  origin: ['https://sciflutter.vercel.app/', 'http://localhost:*'],
+  origin: ['https://sciflutter.vercel.app/*', 'http://localhost:*'],
   credentials: true
 }))
 
