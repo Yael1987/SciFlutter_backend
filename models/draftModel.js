@@ -5,7 +5,7 @@ const draftSchema = new mongoose.Schema({
     type: String,
     required: [true, 'An article must have a name'],
     minLength: [10, 'The name of the article is too short, please provide other name'],
-    maxLength: [100, 'The name of the article is too long, please provide a name with a maximum length of 30 characters'],
+    maxLength: [50, 'The name of the article is too long, please provide a name with a maximum length of 30 characters'],
     trim: true,
     unique: true
   },
