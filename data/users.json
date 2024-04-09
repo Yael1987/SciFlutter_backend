@@ -1,14 +1,5 @@
 [
   {
-    "name": "Molly",
-    "role": "user",
-    "email": "molly@mail.lotto",
-    "status": "active",
-    "lastName": "Harrell",
-    "password": "pass1234",
-    "passwordConfirm": "pass1234"
-  },
-  {
     "name": "Angel",
     "role": "user",
     "email": "angel@mail.ngo",

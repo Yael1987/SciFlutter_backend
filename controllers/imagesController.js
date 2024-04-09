@@ -13,14 +13,14 @@ export const saveUserPics = catchAsync(async (req, res, next) => {
   for (const key of Object.keys(req.files)) {
     if (allowedPics.includes(key)) {
       const file = req.files[key]
-      const fileName = `user-avatars/pic-${key}-${req.user.id}-${Date.now()}.jpeg`
+      const fileName = `user-avatars/pic-${key}-${req.user.id}-${Date.now()}.webp`
 
       const compressFile = await sharp(file.data)
         .toFormat('webp')
-        .jpeg({ quality: 80 })
+        .jpeg({ quality: 70 })
         .toBuffer()
 
-      const minioResponse = await uploadFile(compressFile, `${fileName}.webp`)
+      const minioResponse = await uploadFile(compressFile, fileName)
 
       if (minioResponse.err) {
         return next(new AppError('Error uploading image', 500))
@@ -54,14 +54,14 @@ export const uploadArticleMainImg = catchAsync(async (req, res, next) => {
 
   if (req.files.image) {
     const file = req.files.image
-    const fileName = `articles-main/${req.body.name.replace(' ', '_')}-${req.user.id}.jpeg`
+    const fileName = `articles-main/${req.body.name.replace(' ', '_')}-${req.user.id}.webp`
 
     const compressFile = await sharp(file.data)
       .toFormat('webp')
-      .jpeg({ quality: 80 })
+      .jpeg({ quality: 70 })
       .toBuffer()
 
-    const minioResponse = await uploadFile(compressFile, `${fileName}.webp`)
+    const minioResponse = await uploadFile(compressFile, fileName)
 
     if (minioResponse.err) {
       return next(new AppError('Error uploading image', 500))
@@ -79,14 +79,14 @@ export const uploadArticleImgs = catchAsync(async (req, res) => {
   if (!draft) return res.json({ error: { message: 'Draft not found' } })
 
   const file = req.files.upload
-  const fileName = `articles-images/${draft.name.replace(' ', '_')}-${Date.now()}.jpeg`
+  const fileName = `articles-images/${draft.name.replace(' ', '_')}-${Date.now()}.webp`
 
   const compressFile = await sharp(file.data)
     .toFormat('webp')
-    .jpeg({ quality: 80 })
+    .jpeg({ quality: 70 })
     .toBuffer()
 
-  const minioResponse = await uploadFile(compressFile, `${fileName}.webp`)
+  const minioResponse = await uploadFile(compressFile, fileName)
 
   // const result = await uploadFile(compressFile, `${fileName}.jpeg`)
 
