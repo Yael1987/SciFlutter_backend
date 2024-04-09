@@ -6,7 +6,12 @@
     "status": "active",
     "lastName": "Rodriquez",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "name": "Lindsay",
@@ -15,7 +20,12 @@
     "status": "active",
     "lastName": "Allison",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "name": "Zimmerman",
@@ -24,7 +34,12 @@
     "status": "active",
     "lastName": "Ballard",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "name": "Harding",
@@ -33,7 +48,12 @@
     "status": "active",
     "lastName": "May",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "name": "Mendoza",
@@ -42,7 +62,12 @@
     "status": "active",
     "lastName": "Weeks",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "name": "Franks",
@@ -51,7 +76,12 @@
     "status": "active",
     "lastName": "Pruitt",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "name": "Eaton",
@@ -60,7 +90,12 @@
     "status": "active",
     "lastName": "Hickman",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "name": "Stuart",
@@ -69,7 +104,12 @@
     "status": "active",
     "lastName": "Cline",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "name": "Reva",
@@ -78,7 +118,12 @@
     "status": "active",
     "lastName": "Simpson",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "name": "Lily",
@@ -87,7 +132,12 @@
     "status": "active",
     "lastName": "Goodman",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "name": "Angelique",
@@ -96,7 +146,12 @@
     "status": "active",
     "lastName": "Goodwin",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "name": "Krystal",
@@ -105,7 +160,12 @@
     "status": "active",
     "lastName": "Medina",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "name": "Ortiz",
@@ -114,7 +174,12 @@
     "status": "active",
     "lastName": "Scott",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "name": "Lela",
@@ -123,7 +188,12 @@
     "status": "active",
     "lastName": "Schneider",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "name": "Sonja",
@@ -132,7 +202,12 @@
     "status": "active",
     "lastName": "Delaney",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "name": "Nguyen",
@@ -141,7 +216,12 @@
     "status": "active",
     "lastName": "Mullen",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "name": "Burris",
@@ -150,7 +230,12 @@
     "status": "active",
     "lastName": "Dudley",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "name": "Tamera",
@@ -159,7 +244,12 @@
     "status": "active",
     "lastName": "Schroeder",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "name": "Hale",
@@ -168,7 +258,12 @@
     "status": "active",
     "lastName": "Fitzpatrick",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "name": "Kidd",
@@ -177,7 +272,12 @@
     "status": "active",
     "lastName": "Logan",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "name": "Manning",
@@ -186,7 +286,12 @@
     "status": "active",
     "lastName": "Cunningham",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "name": "Chen",
@@ -195,7 +300,12 @@
     "status": "active",
     "lastName": "Brooks",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "name": "Cantrell",
@@ -204,7 +314,12 @@
     "status": "active",
     "lastName": "Hernandez",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "name": "Black",
@@ -213,7 +328,12 @@
     "status": "active",
     "lastName": "Trujillo",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "name": "Silvia",
@@ -222,14 +342,24 @@
     "status": "active",
     "lastName": "Wolf",
     "password": "pass1234",
-    "passwordConfirm": "pass1234"
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false
   },
   {
     "email": "josephine@mail.tax",
     "name": "Josephine",
     "lastName": "Brennan",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -238,7 +368,12 @@
     "name": "Tucker",
     "lastName": "Ramsey",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -247,7 +382,12 @@
     "name": "Rowena",
     "lastName": "Stout",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -256,7 +396,12 @@
     "name": "Shelton",
     "lastName": "Brewer",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -265,7 +410,12 @@
     "name": "Wilson",
     "lastName": "Peck",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -274,7 +424,12 @@
     "name": "Burke",
     "lastName": "Thornton",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -283,7 +438,12 @@
     "name": "Caldwell",
     "lastName": "Robles",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -292,7 +452,12 @@
     "name": "Santos",
     "lastName": "Foley",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -301,7 +466,12 @@
     "name": "Beverley",
     "lastName": "Wilkinson",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -310,7 +480,12 @@
     "name": "Kane",
     "lastName": "Huber",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -319,7 +494,12 @@
     "name": "Saundra",
     "lastName": "Marshall",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -328,7 +508,12 @@
     "name": "Tran",
     "lastName": "David",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -337,7 +522,12 @@
     "name": "Wilma",
     "lastName": "Morrow",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -346,7 +536,12 @@
     "name": "Lucy",
     "lastName": "Woods",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -355,7 +550,12 @@
     "name": "Kirk",
     "lastName": "Love",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -364,7 +564,12 @@
     "name": "Perry",
     "lastName": "Padilla",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -373,7 +578,12 @@
     "name": "Mayra",
     "lastName": "Curry",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -382,7 +592,12 @@
     "name": "Frye",
     "lastName": "Levine",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -391,7 +606,12 @@
     "name": "Tanisha",
     "lastName": "Arnold",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -400,7 +620,12 @@
     "name": "Glass",
     "lastName": "Mayo",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -409,7 +634,12 @@
     "name": "Amie",
     "lastName": "Hopper",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -418,7 +648,12 @@
     "name": "Trudy",
     "lastName": "Matthews",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -427,7 +662,12 @@
     "name": "Barbra",
     "lastName": "Lee",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -436,7 +676,12 @@
     "name": "Christian",
     "lastName": "Irwin",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -445,7 +690,12 @@
     "name": "Hines",
     "lastName": "Buchanan",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -454,7 +704,12 @@
     "name": "Ida",
     "lastName": "Stanley",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -463,7 +718,12 @@
     "name": "Valeria",
     "lastName": "Sparks",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -472,7 +732,12 @@
     "name": "Rosales",
     "lastName": "Gamble",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -481,7 +746,12 @@
     "name": "Gretchen",
     "lastName": "Parks",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -490,7 +760,12 @@
     "name": "Rice",
     "lastName": "Justice",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -499,7 +774,12 @@
     "name": "Ramona",
     "lastName": "Rosario",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -508,7 +788,12 @@
     "name": "Byers",
     "lastName": "Rodgers",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -517,7 +802,12 @@
     "name": "Ellen",
     "lastName": "Watkins",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -526,7 +816,12 @@
     "name": "Angie",
     "lastName": "Clemons",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -535,7 +830,12 @@
     "name": "Black",
     "lastName": "Chapman",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   },
@@ -544,7 +844,12 @@
     "name": "Robinson",
     "lastName": "Alvarez",
     "password": "pass1234",
-    "passwordConfirm": "pass1234",
+    "photos": {
+      "cover": "/img/default-cover.png",
+      "profile": "/img/default.jpg"
+    },
+    "isAdmin": false,
+    "twoStepsAuthentication": false,
     "role": "user",
     "status": "active"
   }

@@ -5,7 +5,7 @@ const articleSchema = new mongoose.Schema({
     type: String,
     required: [true, 'An article must have a name'],
     minLength: [10, 'The name of the article is too short, please provide other name'],
-    maxLength: [30, 'The name of the article is too long, please provide a name with a maximum length of 30 characters'],
+    maxLength: [100, 'The name of the article is too long, please provide a name with a maximum length of 30 characters'],
     trim: true
   },
   image: {
@@ -18,14 +18,14 @@ const articleSchema = new mongoose.Schema({
     required: [true, 'An article have to be published by one author']
   },
   resume: {
-    type: String
-    // required: [true, 'Please provide a resume and a introduction for your article']
-    // minLength: [200, 'Your resume and introduction are too short please try again with at least 200 characters']
+    type: String,
+    required: [true, 'Please provide a resume and a introduction for your article'],
+    minLength: [200, 'Your resume and introduction are too short please try again with at least 200 characters']
   },
   introduction: {
-    type: String
-    // required: [true, 'An article can be published without introduction']
-    // minLength: [200, 'Your article is too short please try again with at least 200 characters']
+    type: String,
+    required: [true, 'An article can be published without introduction'],
+    minLength: [200, 'Your article is too short please try again with at least 200 characters']
   },
   discipline: {
     type: String,
@@ -34,12 +34,12 @@ const articleSchema = new mongoose.Schema({
   },
   content: {
     type: String,
-    required: [true, 'An article can be published without content']
-    // minLength: [200, 'Your article is too short please try again with at least 200 characters']
+    required: [true, 'An article can be published without content'],
+    minLength: [200, 'Your article is too short please try again with at least 200 characters']
   },
   bibliography: {
-    type: String
-    // required: [true, 'An article must have a bibliography']
+    type: String,
+    required: [true, 'An article must have a bibliography']
   },
   createdAt: {
     type: Date,
