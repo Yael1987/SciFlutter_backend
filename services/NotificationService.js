@@ -24,6 +24,7 @@ export default class NotificationService {
 
     if (user.id) this.refreshNotificationsCache(null, user.id)
     else this.refreshNotificationsCache(null, user)
+
     return notification
   }
 

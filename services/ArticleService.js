@@ -1,6 +1,6 @@
 import ArticleRepository from '../repository/ArticleRepository.js'
+import { deleteFile } from '../s3.js'
 import AppError from '../utils/AppError.js'
-import { deleteFile } from '../utils/minio.js'
 
 export default class ArticleService {
   articleRepository = new ArticleRepository()
@@ -78,7 +78,7 @@ export default class ArticleService {
     const results = await this.articleRepository.getSearchFilters(req.query.name)
     const filters = results[0]
 
-    return filters
+    return filters ?? { disciplines: [], years: [] }
   }
 
   updateArticleById = async (id, data) => {

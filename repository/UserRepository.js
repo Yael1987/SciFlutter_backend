@@ -43,8 +43,28 @@ class UserRepository extends BaseRepository {
           lastName: { $first: '$lastName' },
           discipline: { $first: '$discipline' },
           photos: { $first: '$photos' },
-          followers: { $sum: { $cond: { if: { $isArray: '$followers' }, then: 1, else: 0 } } },
-          articles: { $sum: 1 },
+          followers: {
+            $sum: {
+              $cond: {
+                if: {
+                  $isArray: '$followers'
+                },
+                then: {
+                  $size: '$followers'
+                },
+                else: 0
+              }
+            }
+          },
+          articles: {
+            $sum: {
+              $cond: [
+                { $eq: ['$articles.status', 'published'] },
+                1,
+                0
+              ]
+            }
+          },
           likes: { $sum: '$articles.likes' }
         }
       },
@@ -94,8 +114,28 @@ class UserRepository extends BaseRepository {
       {
         $group: {
           _id: '$author',
-          followers: { $sum: { $cond: { if: { $isArray: '$followers' }, then: 1, else: 0 } } },
-          articles: { $sum: 1 },
+          followers: {
+            $sum: {
+              $cond: {
+                if: {
+                  $isArray: '$followers'
+                },
+                then: {
+                  $size: '$followers'
+                },
+                else: 0
+              }
+            }
+          },
+          articles: {
+            $sum: {
+              $cond: [
+                { $eq: ['$articles.status', 'published'] },
+                1,
+                0
+              ]
+            }
+          },
           likes: { $sum: '$articles.likes' }
         }
       },

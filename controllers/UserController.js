@@ -1,11 +1,11 @@
 import catchAsync from '../utils/catchAsync.js'
-import { deleteFile } from '../utils/minio.js'
 import BaseController from './BaseController.js'
 import UserService from '../services/UserService.js'
 import MessageService from '../services/MessageService.js'
 import ArticleService from '../services/ArticleService.js'
 import FeaturesService from '../services/FeaturesService.js'
 import DraftService from '../services/DraftService.js'
+import { deleteFile } from '../s3.js'
 
 class UserController extends BaseController {
   userService = new UserService()
